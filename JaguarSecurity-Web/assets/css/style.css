@@ -6,6 +6,75 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.floating-orb {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.3;
+  animation: orb-drift 18s ease-in-out infinite;
+}
+
+.orb-one {
+  top: 12%;
+  left: 8%;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(34, 211, 238, 0.85);
+}
+
+.orb-two {
+  top: 16%;
+  right: 10%;
+  width: 24rem;
+  height: 24rem;
+  background: rgba(59, 130, 246, 0.7);
+  animation-delay: -5s;
+  animation-duration: 22s;
+}
+
+.orb-three {
+  bottom: 10%;
+  left: 18%;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(76, 29, 149, 0.75);
+  animation-delay: -9s;
+  animation-duration: 24s;
+}
+
+.orb-four {
+  bottom: 14%;
+  right: 18%;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(34, 211, 238, 0.55);
+  animation-delay: -13s;
+  animation-duration: 20s;
+}
+
+@keyframes orb-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  25% {
+    transform: translate3d(4vw, -3vh, 0) scale(1.08);
+  }
+
+  50% {
+    transform: translate3d(1vw, 5vh, 0) scale(0.92);
+  }
+
+  75% {
+    transform: translate3d(-5vw, 2vh, 0) scale(1.12);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 .sidebar-item {
   display: block;
   border-radius: 0.75rem;
