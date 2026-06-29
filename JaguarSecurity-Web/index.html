@@ -1,142 +1,436 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JaguarSecurity | Panel de Control</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden">
-
-  <aside class="w-72 bg-gray-950 border-r border-gray-800 flex flex-col justify-between shrink-0">
-    
-    <div class="h-20 flex items-center justify-center border-b border-gray-800 px-6">
-      <img src="assets/img/logo_jaguarsecurity.png" alt="JaguarSecurity" class="h-10 w-auto object-contain">
-    </div>
-
-    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-      <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Módulos Operativos</p>
-
-      <a href="#" class="flex items-center gap-3 px-4 py-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 transition group">
-        <i class="ph ph-squares-four text-xl"></i>
-        <span class="font-medium">Inicio</span>
-      </a>
-
-      <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group">
-        <i class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition"></i>
-        <span class="font-medium">Control Vehicular</span>
-      </a>
-
-      <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group">
-        <i class="ph ph-users text-xl group-hover:text-cyan-400 transition"></i>
-        <span class="font-medium">Personal Autorizado</span>
-      </a>
-
-      <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group">
-        <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition"></i>
-        <span class="font-medium">Bitácora / Reportes</span>
-      </a>
-    </nav>
-
-    <div class="p-4 border-t border-gray-800">
-      <div class="flex items-center gap-3 p-3 bg-gray-900 rounded-xl border border-gray-700">
-        <div id="userInitialsDisplay" class="h-10 w-10 rounded-full bg-cyan-900/50 flex items-center justify-center text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_18px_rgba(34,211,238,0.12)]">
-          JB
-        </div>
-        <div class="flex-1 overflow-hidden">
-          <p id="userNameDisplay" class="text-sm font-semibold text-white truncate">José Baca</p>
-          <p class="text-xs text-gray-400 truncate">Operador en turno</p>
-        </div>
-        <button class="text-gray-400 hover:text-red-400 transition p-2" title="Cerrar Turno">
-          <i class="ph ph-sign-out text-xl"></i>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JaguarSecurity | Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden">
+    <aside
+      id="modulesSidebar"
+      class="w-72 bg-gray-950 border-r border-gray-800 flex flex-col justify-between shrink-0 transition-all duration-300 ease-in-out overflow-hidden z-20"
+    >
+      <div
+        class="h-20 flex items-center justify-between border-b border-gray-800 px-4"
+      >
+        <img
+          id="sidebarLogo"
+          src="assets/img/logo_jaguarsecurity.png"
+          alt="JaguarSecurity"
+          class="h-20 w-auto object-contain scale-[1.35] translate-x-[20px] -translate-y-[0px] transition-all duration-300"
+        />
+        <button
+          id="sidebarToggle"
+          type="button"
+          class="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-cyan-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200"
+          aria-label="Colapsar módulos operativos"
+          aria-expanded="true"
+        >
+          <i id="sidebarToggleIcon" class="ph ph-caret-double-left text-lg"></i>
         </button>
       </div>
-    </div>
-  </aside>
 
-  <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-    
-    <header class="h-20 bg-gray-900/80 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-8 shrink-0 z-10">
-      <div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">Inicio</h1>
-        <p class="text-sm text-gray-400">Resumen operativo de hoy: <span class="text-cyan-400" id="currentDate"></span></p>
-      </div>
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <p
+          id="sidebarTitle"
+          class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 transition-all duration-300"
+        >
+          Módulos Operativos
+        </p>
 
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-          <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
-          <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Sistema En Línea</span>
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 transition group"
+        >
+          <i class="ph ph-squares-four text-xl"></i>
+          <span class="sidebar-label font-medium">Inicio</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i
+            class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition"
+          ></i>
+          <span class="sidebar-label font-medium">Registrar Vehículo</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i
+            class="ph ph-users text-xl group-hover:text-cyan-400 transition"
+          ></i>
+          <span class="sidebar-label font-medium">Información de Operador</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i
+            class="ph ph-file-text text-xl group-hover:text-cyan-400 transition"
+          ></i>
+          <span class="sidebar-label font-medium">Bitácora de registros</span>
+        </a>
+      </nav>
+
+      <div
+        id="sidebarFooter"
+        class="p-4 border-t border-gray-800 transition-all duration-300"
+      >
+        <div
+          class="flex items-center gap-3 p-3 bg-gray-900 rounded-xl border border-gray-700"
+        >
+          <div
+            id="userInitialsDisplay"
+            class="h-10 w-10 rounded-full bg-cyan-900/50 flex items-center justify-center text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_18px_rgba(34,211,238,0.12)]"
+          >
+            JB
+          </div>
+          <div
+            id="sidebarUserInfo"
+            class="flex-1 overflow-hidden transition-all duration-300"
+          >
+            <p
+              id="userNameDisplay"
+              class="text-sm font-semibold text-white truncate"
+            >
+              José Baca
+            </p>
+            <p class="text-xs text-gray-400 truncate">Operador en turno</p>
+          </div>
+          <button
+            id="logoutButton"
+            class="text-gray-400 hover:text-red-400 transition p-2"
+            title="Cerrar Turno"
+            type="button"
+          >
+            <i class="ph ph-sign-out text-xl"></i>
+          </button>
         </div>
       </div>
-    </header>
+    </aside>
 
-    <div class="flex-1 overflow-y-auto p-8 relative">
-      
-      <div class="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+    <main
+      class="flex-1 flex flex-col h-screen overflow-hidden relative bg-gray-950"
+    >
+      <div
+        class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+      >
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          class="w-full h-full object-cover opacity-30"
+        >
+          <source src="assets/video/background_security.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gray-950/60 backdrop-blur-[2px]"></div>
+      </div>
+      <header
+        class="h-20 bg-gray-900/60 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-8 shrink-0 relative z-10"
+      >
+        <div class="flex items-center gap-3">
+          <button
+            id="sidebarToggleExternal"
+            type="button"
+            class="hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200"
+            aria-label="Expandir módulos operativos"
+            aria-expanded="false"
+          >
+            <i class="ph ph-sidebar-simple text-xl"></i>
+          </button>
 
-      <section class="relative z-10 max-w-5xl mx-auto">
-        <div class="overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
-          <div class="px-8 py-8 sm:px-10 sm:py-10 border-b border-white/5 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_35%)]">
-            <p class="text-xs uppercase tracking-[0.42em] text-cyan-300">JaguarSecurity WEB</p>
-            <div class="mt-4 flex flex-wrap items-end gap-x-3 gap-y-2">
-              <h2 id="welcomeTitle" class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-                ¡Hola, JOSÉ BACA!
-              </h2>
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Inicio</h1>
+            <p class="text-sm text-gray-400">
+              Resumen operativo de hoy:
+              <span class="text-cyan-400" id="currentDate"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
+          >
+            <span
+              class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"
+            ></span>
+            <span
+              class="text-xs font-medium text-emerald-400 uppercase tracking-wider"
+              >Sistema En Línea</span
+            >
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-8 relative z-10">
+        <div
+          class="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:40px_40px]"
+        ></div>
+
+        <section class="relative z-10 max-w-5xl mx-auto">
+          <div
+            class="overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-gray-900/90 via-gray-900/90 to-gray-950/90 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/35 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_30px_90px_rgba(0,0,0,0.55),0_0_45px_rgba(34,211,238,0.12)]"
+          >
+            <div
+              class="px-8 py-8 sm:px-10 sm:py-10 border-b border-white/5 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_35%)]"
+            >
+              <p class="text-xs uppercase tracking-[0.42em] text-cyan-300">
+                JaguarSecurity WEB
+              </p>
+              <div class="mt-4 flex flex-wrap items-end gap-x-3 gap-y-2">
+                <h2
+                  id="welcomeTitle"
+                  class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white"
+                >
+                  ¡Hola, JOSÉ BACA!
+                </h2>
+              </div>
+              <p class="mt-3 text-lg text-cyan-100/80">
+                Bienvenid@ a JaguarSecurity WEB.
+              </p>
             </div>
-            <p class="mt-3 text-lg text-cyan-100/80">Bienvenido a JaguarSecurity WEB.</p>
+
+            <div
+              class="grid gap-6 px-8 py-8 sm:px-10 lg:grid-cols-[1.25fr_0.75fr]"
+            >
+              <article
+                class="rounded-[1.75rem] border border-cyan-400/15 bg-gray-900/70 p-7 shadow-[0_0_0_1px_rgba(34,211,238,0.05),0_16px_50px_rgba(0,0,0,0.24)] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-gray-900/85 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.18),0_22px_60px_rgba(0,0,0,0.35),0_0_40px_rgba(34,211,238,0.14)] cursor-default group"
+              >
+                <h3
+                  class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-200"
+                >
+                  Centro de Operaciones y Monitoreo
+                </h3>
+                <p class="mt-5 text-base leading-8 text-gray-300">
+                  Este sistema está diseñado para mantener un control estricto y
+                  en tiempo real de todos los accesos vehiculares a las
+                  instalaciones. Tu labor es fundamental para garantizar la
+                  seguridad de la universidad americana.
+                </p>
+                <p class="mt-5 text-base leading-8 text-gray-300">
+                  A través de este panel podrás registrar entradas y salidas de
+                  vehículos, gestionar la bitácora de novedades, verificar al
+                  personal autorizado y generar reportes automáticos al
+                  finalizar tu turno operativo.
+                </p>
+              </article>
+
+              <aside class="grid gap-4 content-start">
+                <div
+                  class="rounded-[1.5rem] border border-white/5 bg-white/5 p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/35 hover:bg-cyan-400/10 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_18px_45px_rgba(0,0,0,0.28),0_0_28px_rgba(34,211,238,0.12)] cursor-default"
+                >
+                  <p class="text-xs uppercase tracking-[0.3em] text-cyan-300">
+                    Estado de turno
+                  </p>
+                  <p class="mt-3 text-2xl font-bold text-white">Operativo</p>
+                  <p class="mt-1 text-sm text-gray-400">
+                    Panel listo para monitoreo y registro.
+                  </p>
+                </div>
+
+                <div
+                  class="rounded-[1.5rem] border border-white/5 bg-white/5 p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-yellow-300/35 hover:bg-yellow-400/10 hover:shadow-[0_0_0_1px_rgba(250,204,21,0.12),0_18px_45px_rgba(0,0,0,0.28),0_0_28px_rgba(250,204,21,0.12)] cursor-default"
+                >
+                  <p class="text-xs uppercase tracking-[0.3em] text-yellow-200">
+                    Acceso activo
+                  </p>
+                  <p class="mt-3 text-2xl font-bold text-white">
+                    Sesión segura
+                  </p>
+                  <p class="mt-1 text-sm text-gray-400">
+                    Tu credencial se mantiene en memoria local.
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
+        </section>
+      </div>
+    </main>
 
-          <div class="grid gap-6 px-8 py-8 sm:px-10 lg:grid-cols-[1.25fr_0.75fr]">
-            <article class="rounded-[1.75rem] border border-cyan-400/15 bg-gray-900/70 p-7 shadow-[0_0_0_1px_rgba(34,211,238,0.05),0_16px_50px_rgba(0,0,0,0.24)]">
-              <h3 class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-200">Centro de Operaciones y Monitoreo</h3>
-              <p class="mt-5 text-base leading-8 text-gray-300">
-                Este sistema está diseñado para mantener un control estricto y en tiempo real de todos los accesos vehiculares a las instalaciones. Tu labor es fundamental para garantizar la seguridad del recinto.
-              </p>
-              <p class="mt-5 text-base leading-8 text-gray-300">
-                A través de este panel podrás registrar entradas y salidas de vehículos, gestionar la bitácora de novedades, verificar al personal autorizado y generar reportes automáticos al finalizar tu turno operativo.
-              </p>
-            </article>
+    <div
+      id="logoutModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/80 px-4 backdrop-blur-sm"
+      aria-hidden="true"
+    >
+      <div
+        class="w-full max-w-md rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+      >
+        <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">
+          Confirmación requerida
+        </p>
+        <h3 class="mt-3 text-2xl font-bold text-white">
+          ¿Desea cerrar la sesión?
+        </h3>
+        <p class="mt-3 text-sm leading-6 text-gray-400">
+          Si confirma, se cerrará el turno actual y regresará a la pantalla de
+          inicio de sesión.
+        </p>
 
-            <aside class="grid gap-4 content-start">
-              <div class="rounded-[1.5rem] border border-white/5 bg-white/5 p-5">
-                <p class="text-xs uppercase tracking-[0.3em] text-cyan-300">Estado de turno</p>
-                <p class="mt-3 text-2xl font-bold text-white">Operativo</p>
-                <p class="mt-1 text-sm text-gray-400">Panel listo para monitoreo y registro.</p>
-              </div>
-
-              <div class="rounded-[1.5rem] border border-white/5 bg-white/5 p-5">
-                <p class="text-xs uppercase tracking-[0.3em] text-yellow-200">Acceso activo</p>
-                <p class="mt-3 text-2xl font-bold text-white">Sesión segura</p>
-                <p class="mt-1 text-sm text-gray-400">Tu credencial se mantiene en memoria local.</p>
-              </div>
-            </aside>
-          </div>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button
+            id="cancelLogoutButton"
+            type="button"
+            class="flex-1 rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 font-semibold text-gray-200 transition hover:border-cyan-400/30 hover:bg-gray-800 hover:text-white"
+          >
+            No, continuar
+          </button>
+          <button
+            id="confirmLogoutButton"
+            type="button"
+            class="flex-1 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-3 font-semibold text-gray-950 transition hover:brightness-110"
+          >
+            Sí, cerrar sesión
+          </button>
         </div>
-      </section>
-
+      </div>
     </div>
 
-  </main>
+    <script>
+      const sessionData = JSON.parse(
+        localStorage.getItem("JaguarSession") || "null",
+      );
+      const currentDateElement = document.getElementById("currentDate");
+      const userNameElement = document.getElementById("userNameDisplay");
+      const userInitialsElement = document.getElementById(
+        "userInitialsDisplay",
+      );
+      const welcomeTitleElement = document.getElementById("welcomeTitle");
+      const sidebar = document.getElementById("modulesSidebar");
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const sidebarToggleExternal = document.getElementById(
+        "sidebarToggleExternal",
+      );
+      const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+      const sidebarTitle = document.getElementById("sidebarTitle");
+      const sidebarLabels = document.querySelectorAll(".sidebar-label");
+      const sidebarFooter = document.getElementById("sidebarFooter");
+      const sidebarUserInfo = document.getElementById("sidebarUserInfo");
+      const sidebarLogo = document.getElementById("sidebarLogo");
+      const logoutButton = document.getElementById("logoutButton");
+      const logoutModal = document.getElementById("logoutModal");
+      const cancelLogoutButton = document.getElementById("cancelLogoutButton");
+      const confirmLogoutButton = document.getElementById("confirmLogoutButton");
 
-  <script>
-    const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
-    const currentDateElement = document.getElementById('currentDate');
-    const userNameElement = document.getElementById('userNameDisplay');
-    const userInitialsElement = document.getElementById('userInitialsDisplay');
-    const welcomeTitleElement = document.getElementById('welcomeTitle');
+      currentDateElement.textContent = new Date().toLocaleDateString("es-NI", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
 
-    currentDateElement.textContent = new Date().toLocaleDateString('es-NI', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      if (sessionData && sessionData.nombre && sessionData.apellido) {
+        const nombreCompleto =
+          `${sessionData.nombre} ${sessionData.apellido}`.trim();
+        const nombreCompletoMayusculas = nombreCompleto.toUpperCase();
+        const iniciales =
+          `${sessionData.nombre.charAt(0)}${sessionData.apellido.charAt(0)}`.toUpperCase();
 
-    if (sessionData && sessionData.nombre && sessionData.apellido) {
-      const nombreCompleto = `${sessionData.nombre} ${sessionData.apellido}`.trim();
-      const nombreCompletoMayusculas = nombreCompleto.toUpperCase();
-      const iniciales = `${sessionData.nombre.charAt(0)}${sessionData.apellido.charAt(0)}`.toUpperCase();
+        userNameElement.textContent = nombreCompleto;
+        userInitialsElement.textContent = iniciales;
+        welcomeTitleElement.textContent = `¡HOLA, ${nombreCompletoMayusculas}!`;
+      }
 
-      userNameElement.textContent = nombreCompleto;
-      userInitialsElement.textContent = iniciales;
-      welcomeTitleElement.textContent = `¡Hola, ${nombreCompletoMayusculas}!`;
-    }
-  </script>
-</body>
+      const setSidebarState = (collapsed) => {
+        sidebar.classList.toggle("w-72", !collapsed);
+        sidebar.classList.toggle("w-0", collapsed);
+        sidebar.classList.toggle("border-r", !collapsed);
+        sidebar.classList.toggle("border-r-0", collapsed);
+        sidebar.classList.toggle("pointer-events-auto", !collapsed);
+        sidebar.classList.toggle("pointer-events-none", collapsed);
+
+        sidebarLogo.classList.toggle("h-20", !collapsed);
+        sidebarLogo.classList.toggle("h-10", collapsed);
+        sidebarLogo.classList.toggle("scale-[1.35]", !collapsed);
+        sidebarLogo.classList.toggle("scale-100", collapsed);
+        sidebarTitle.classList.toggle("opacity-100", !collapsed);
+        sidebarTitle.classList.toggle("opacity-0", collapsed);
+        sidebarTitle.classList.toggle("max-h-10", !collapsed);
+        sidebarTitle.classList.toggle("max-h-0", collapsed);
+        sidebarLabels.forEach((label) => {
+          label.classList.toggle("opacity-100", !collapsed);
+          label.classList.toggle("opacity-0", collapsed);
+          label.classList.toggle("w-auto", !collapsed);
+          label.classList.toggle("w-0", collapsed);
+        });
+        sidebarUserInfo.classList.toggle("opacity-100", !collapsed);
+        sidebarUserInfo.classList.toggle("opacity-0", collapsed);
+        sidebarUserInfo.classList.toggle("max-w-full", !collapsed);
+        sidebarUserInfo.classList.toggle("max-w-0", collapsed);
+        sidebarFooter.classList.toggle("p-4", !collapsed);
+        sidebarFooter.classList.toggle("p-2", collapsed);
+
+        sidebarToggle.classList.toggle("opacity-100", !collapsed);
+        sidebarToggle.classList.toggle("opacity-0", collapsed);
+        sidebarToggle.classList.toggle("pointer-events-auto", !collapsed);
+        sidebarToggle.classList.toggle("pointer-events-none", collapsed);
+
+        sidebarToggleExternal.classList.toggle("hidden", !collapsed);
+        sidebarToggleExternal.setAttribute("aria-expanded", String(!collapsed));
+        sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+        sidebarToggle.setAttribute(
+          "aria-label",
+          collapsed
+            ? "Expandir módulos operativos"
+            : "Colapsar módulos operativos",
+        );
+        sidebarToggleIcon.className = collapsed
+          ? "ph ph-caret-double-right text-lg"
+          : "ph ph-caret-double-left text-lg";
+      };
+
+      let sidebarCollapsed = false;
+      setSidebarState(sidebarCollapsed);
+
+      sidebarToggle.addEventListener("click", () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      sidebarToggleExternal.addEventListener("click", () => {
+        sidebarCollapsed = false;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      const openLogoutModal = () => {
+        logoutModal.classList.remove("hidden");
+        logoutModal.classList.add("flex");
+        logoutModal.setAttribute("aria-hidden", "false");
+      };
+
+      const closeLogoutModal = () => {
+        logoutModal.classList.add("hidden");
+        logoutModal.classList.remove("flex");
+        logoutModal.setAttribute("aria-hidden", "true");
+      };
+
+      logoutButton.addEventListener("click", openLogoutModal);
+      cancelLogoutButton.addEventListener("click", closeLogoutModal);
+      confirmLogoutButton.addEventListener("click", () => {
+        localStorage.removeItem("JaguarSession");
+        window.location.href = "login.html";
+      });
+
+      logoutModal.addEventListener("click", (event) => {
+        if (event.target === logoutModal) {
+          closeLogoutModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !logoutModal.classList.contains("hidden")) {
+          closeLogoutModal();
+        }
+      });
+    </script>
+  </body>
 </html>
