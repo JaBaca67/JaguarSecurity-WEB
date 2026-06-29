@@ -10,7 +10,7 @@
   <body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden">
     <aside
       id="modulesSidebar"
-      class="w-72 bg-gray-950 border-r border-gray-800 flex flex-col justify-between shrink-0 transition-all duration-300 ease-in-out overflow-hidden z-20"
+      class="absolute inset-y-0 left-0 z-30 flex h-full w-0 -translate-x-full flex-col justify-between overflow-hidden border-r border-gray-800 bg-gray-950 transition-all duration-300 ease-in-out md:relative md:z-20"
     >
       <div
         class="h-20 flex items-center justify-between border-b border-gray-800 px-4"
@@ -140,7 +140,7 @@
           <button
             id="sidebarToggleExternal"
             type="button"
-            class="hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200 md:hidden"
             aria-label="Expandir módulos operativos"
             aria-expanded="false"
           >
@@ -320,6 +320,7 @@
       const logoutModal = document.getElementById("logoutModal");
       const cancelLogoutButton = document.getElementById("cancelLogoutButton");
       const confirmLogoutButton = document.getElementById("confirmLogoutButton");
+      const isMobileViewport = () => window.matchMedia("(max-width: 767px)").matches;
 
       currentDateElement.textContent = new Date().toLocaleDateString("es-NI", {
         weekday: "long",
@@ -341,12 +342,15 @@
       }
 
       const setSidebarState = (collapsed) => {
+        const mobile = isMobileViewport();
+
+        sidebar.classList.toggle("w-0", collapsed && mobile);
+        sidebar.classList.toggle("w-20", collapsed && !mobile);
         sidebar.classList.toggle("w-72", !collapsed);
-        sidebar.classList.toggle("w-0", collapsed);
-        sidebar.classList.toggle("border-r", !collapsed);
-        sidebar.classList.toggle("border-r-0", collapsed);
-        sidebar.classList.toggle("pointer-events-auto", !collapsed);
-        sidebar.classList.toggle("pointer-events-none", collapsed);
+        sidebar.classList.toggle("-translate-x-full", collapsed && mobile);
+        sidebar.classList.toggle("translate-x-0", !collapsed || !mobile);
+        sidebar.classList.toggle("pointer-events-none", collapsed && mobile);
+        sidebar.classList.toggle("pointer-events-auto", !collapsed || !mobile);
 
         sidebarLogo.classList.toggle("h-20", !collapsed);
         sidebarLogo.classList.toggle("h-10", collapsed);
@@ -388,7 +392,7 @@
           : "ph ph-caret-double-left text-lg";
       };
 
-      let sidebarCollapsed = false;
+      let sidebarCollapsed = isMobileViewport();
       setSidebarState(sidebarCollapsed);
 
       sidebarToggle.addEventListener("click", () => {
@@ -398,6 +402,10 @@
 
       sidebarToggleExternal.addEventListener("click", () => {
         sidebarCollapsed = false;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      window.addEventListener("resize", () => {
         setSidebarState(sidebarCollapsed);
       });
 
