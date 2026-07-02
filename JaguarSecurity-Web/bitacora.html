@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JaguarSecurity | Bitácora de Registros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+      #bgVideo {
+        transition: opacity 0.45s ease-in-out;
+      }
+
+      .glass-panel {
+        background: linear-gradient(180deg, rgba(3, 7, 18, 0.88), rgba(3, 7, 18, 0.72));
+        backdrop-filter: blur(18px);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 h-[100dvh] flex overflow-hidden">
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <video id="bgVideo" autoplay loop muted playsinline class="h-full w-full object-cover opacity-30">
+        <source src="assets/video/background_security.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gray-950/75 backdrop-blur-[3px]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_30%)]"></div>
+    </div>
+
+    <aside
+      id="modulesSidebar"
+      class="absolute inset-y-0 left-0 z-30 flex h-full w-0 -translate-x-full flex-col justify-between overflow-hidden border-r border-gray-800 bg-gray-950 transition-all duration-300 ease-in-out md:relative md:z-20"
+    >
+      <div
+        id="sidebarHeader"
+        class="h-20 flex items-center justify-between border-b border-gray-800 px-4 transition-all duration-300"
+      >
+        <img
+          id="sidebarLogo"
+          src="assets/img/logo_jaguarsecurity.png"
+          alt="JaguarSecurity"
+          class="h-20 w-auto object-contain scale-[1.35] translate-x-[20px] transition-all duration-300"
+        />
+        <button
+          id="sidebarToggle"
+          type="button"
+          class="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-cyan-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200 shrink-0"
+          aria-label="Colapsar módulos operativos"
+          aria-expanded="true"
+        >
+          <i id="sidebarToggleIcon" class="ph ph-caret-double-left text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <p
+          id="sidebarTitle"
+          class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 transition-all duration-300 whitespace-nowrap overflow-hidden"
+        >
+          Módulos Operativos
+        </p>
+
+        <a
+          href="index.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-squares-four text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Inicio</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-users text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Información de Operador</span>
+        </a>
+
+        <a
+          href="registro.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Registrar Vehículos</span>
+        </a>
+
+        <a
+          href="bitacora.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 transition group"
+        >
+          <i class="ph ph-file-text text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Bitácora de registros</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-magnifying-glass text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Buscar Antecedentes</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-shield-check text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-file-csv text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Generar Reporte .csv</span>
+        </a>
+      </nav>
+
+      <div
+        id="sidebarFooter"
+        class="p-4 border-t border-gray-800 transition-all duration-300"
+      >
+        <div
+          id="footerFlex"
+          class="flex items-center gap-3 p-3 bg-gray-900 rounded-xl border border-gray-700 transition-all duration-300 overflow-hidden"
+        >
+          <div
+            id="userInitialsDisplay"
+            class="h-10 w-10 shrink-0 rounded-full bg-cyan-900/50 flex items-center justify-center text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_18px_rgba(34,211,238,0.12)]"
+          >
+            --
+          </div>
+          <div id="sidebarUserInfo" class="flex-1 overflow-hidden transition-all duration-300">
+            <p id="userNameDisplay" class="text-sm font-semibold text-white truncate">Operador</p>
+            <p id="userRoleDisplay" class="text-xs text-gray-400 truncate">Operador en turno</p>
+          </div>
+          <button
+            id="logoutButton"
+            class="text-gray-400 hover:text-red-400 transition p-2 shrink-0"
+            title="Cerrar Turno"
+            type="button"
+          >
+            <i class="ph ph-sign-out text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-gray-950">
+      <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
+          <source src="assets/video/background_security.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gray-950/60 backdrop-blur-[2px]"></div>
+      </div>
+
+      <header class="h-20 bg-gray-900/60 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 sm:px-8 shrink-0 relative z-10">
+        <div class="flex items-center gap-3">
+          <button
+            id="sidebarToggleExternal"
+            type="button"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200 md:hidden"
+            aria-label="Expandir módulos operativos"
+            aria-expanded="false"
+          >
+            <i class="ph ph-sidebar-simple text-xl"></i>
+          </button>
+
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Bitácora</h1>
+            <p class="text-sm text-gray-400">
+              Registros almacenados localmente:
+              <span class="text-cyan-400" id="fechaActual"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="hidden md:flex items-center gap-4">
+          <div class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
+            <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Sistema En Línea</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-5 pb-24 sm:p-8 relative z-10">
+        <div class="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+
+        <section class="relative z-10 mx-auto w-full max-w-7xl space-y-5">
+          <div class="glass-panel rounded-[1.75rem] border border-cyan-500/20 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div class="max-w-3xl">
+                <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Bitácora local</p>
+                <h2 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Consulta, inspecciona y exporta los registros</h2>
+                <p class="mt-3 text-sm leading-6 text-gray-400">
+                  Visualización adaptable para escritorio y móviles. Busca por placa o conductor, revisa fotos en tamaño completo y exporta el historial a CSV.
+                </p>
+              </div>
+
+              <button
+                id="exportCsvButton"
+                type="button"
+                class="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 text-sm font-bold text-gray-950 shadow-[0_16px_35px_rgba(16,185,129,0.22)] transition hover:brightness-110 active:scale-[0.99]"
+              >
+                <i class="ph ph-file-csv text-xl"></i>
+                Exportar a CSV
+              </button>
+            </div>
+
+            <div class="mt-5 grid gap-3 lg:grid-cols-[1fr_auto]">
+              <div class="relative">
+                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input
+                  id="searchInput"
+                  type="search"
+                  class="h-12 w-full rounded-2xl border border-gray-700 bg-gray-900/90 pl-11 pr-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
+                  placeholder="Buscar por placa o conductor"
+                />
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-cyan-500/15 bg-cyan-500/5 px-4 py-3 text-sm text-cyan-100">
+                <i class="ph ph-database text-cyan-300"></i>
+                <span id="counterLabel">0 registros</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="emptyState" class="hidden glass-panel rounded-[1.75rem] border border-white/5 p-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10 text-cyan-300">
+              <i class="ph ph-file-text text-3xl"></i>
+            </div>
+            <h3 class="mt-4 text-xl font-bold text-white">No hay registros para mostrar</h3>
+            <p class="mt-2 text-sm leading-6 text-gray-400">Cuando se guarden ingresos en localStorage aparecerán aquí automáticamente.</p>
+          </div>
+
+          <div class="glass-panel rounded-[1.75rem] border border-cyan-500/20 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden">
+            <div class="hidden md:block overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-800">
+                <thead class="bg-gray-900/80">
+                  <tr>
+                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Fecha</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Placa</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Conductor</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Destino</th>
+                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="desktopTableBody" class="divide-y divide-gray-800 bg-gray-950/40"></tbody>
+              </table>
+            </div>
+
+            <div id="mobileCardsContainer" class="grid gap-4 p-4 md:hidden"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/85 px-4 backdrop-blur-sm" aria-hidden="true">
+      <div class="w-full max-w-4xl rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.55)] sm:p-6">
+        <div class="flex items-center justify-between gap-4 border-b border-white/5 pb-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Vista previa ampliada</p>
+            <h3 id="imageModalTitle" class="mt-2 text-xl font-bold text-white">Imagen</h3>
+          </div>
+          <button id="closeImageModalButton" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-gray-300 transition hover:border-cyan-400/30 hover:text-white" aria-label="Cerrar imagen">
+            <i class="ph ph-x text-xl"></i>
+          </button>
+        </div>
+        <div class="mt-4 flex items-center justify-center rounded-[1.25rem] border border-gray-800 bg-gray-900/70 p-3 sm:p-6">
+          <img id="imageModalPreview" alt="Vista ampliada" class="max-h-[75vh] w-auto max-w-full rounded-xl border border-white/5 object-contain" />
+        </div>
+      </div>
+    </div>
+
+    <div id="detailsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/85 px-4 backdrop-blur-sm" aria-hidden="true">
+      <div class="w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+        <div class="flex items-center justify-between gap-4 border-b border-white/5 px-4 py-4 sm:px-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Detalle del registro</p>
+            <h3 id="detailsModalTitle" class="mt-2 text-xl font-bold text-white">Registro</h3>
+          </div>
+          <button id="closeDetailsModalButton" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-gray-300 transition hover:border-cyan-400/30 hover:text-white" aria-label="Cerrar detalle">
+            <i class="ph ph-x text-xl"></i>
+          </button>
+        </div>
+        <div class="max-h-[calc(90vh-82px)] overflow-y-auto p-4 sm:p-6">
+          <div id="detailsModalContent" class="grid gap-4 lg:grid-cols-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
+      const registros = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+
+      const fechaActual = document.getElementById('fechaActual');
+      const counterLabel = document.getElementById('counterLabel');
+      const searchInput = document.getElementById('searchInput');
+      const exportCsvButton = document.getElementById('exportCsvButton');
+      const desktopTableBody = document.getElementById('desktopTableBody');
+      const mobileCardsContainer = document.getElementById('mobileCardsContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      const sidebar = document.getElementById('modulesSidebar');
+      const sidebarHeader = document.getElementById('sidebarHeader');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleExternal = document.getElementById('sidebarToggleExternal');
+      const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+      const sidebarTitle = document.getElementById('sidebarTitle');
+      const sidebarLabels = document.querySelectorAll('.sidebar-label');
+      const sidebarFooter = document.getElementById('sidebarFooter');
+      const footerFlex = document.getElementById('footerFlex');
+      const sidebarUserInfo = document.getElementById('sidebarUserInfo');
+      const sidebarLogo = document.getElementById('sidebarLogo');
+      const logoutButton = document.getElementById('logoutButton');
+      const logoutModal = document.getElementById('logoutModal');
+      const cancelLogoutButton = document.getElementById('cancelLogoutButton');
+      const confirmLogoutButton = document.getElementById('confirmLogoutButton');
+
+      const imageModal = document.getElementById('imageModal');
+      const imageModalTitle = document.getElementById('imageModalTitle');
+      const imageModalPreview = document.getElementById('imageModalPreview');
+      const closeImageModalButton = document.getElementById('closeImageModalButton');
+
+      const detailsModal = document.getElementById('detailsModal');
+      const detailsModalTitle = document.getElementById('detailsModalTitle');
+      const detailsModalContent = document.getElementById('detailsModalContent');
+      const closeDetailsModalButton = document.getElementById('closeDetailsModalButton');
+
+      const userNameDisplay = document.getElementById('userNameDisplay');
+      const userInitialsDisplay = document.getElementById('userInitialsDisplay');
+      const userRoleDisplay = document.getElementById('userRoleDisplay');
+      const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+      const formatDateTime = (value) => {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return value || 'N/D';
+        }
+
+        return new Intl.DateTimeFormat('es-NI', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        }).format(date);
+      };
+
+      const safeText = (value) => (value && String(value).trim() ? String(value) : 'N/D');
+
+      const getRecords = () => JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+
+      const getFilteredRecords = () => {
+        const query = searchInput.value.trim().toLowerCase();
+        const source = getRecords();
+
+        if (!query) {
+          return source;
+        }
+
+        return source.filter((record) => {
+          const placa = safeText(record.placa_texto).toLowerCase();
+          const conductor = safeText(record.nombre).toLowerCase();
+          return placa.includes(query) || conductor.includes(query);
+        });
+      };
+
+      const openImageModal = (src, title) => {
+        if (!src) {
+          return;
+        }
+
+        imageModalTitle.textContent = title || 'Imagen';
+        imageModalPreview.src = src;
+        imageModal.classList.remove('hidden');
+        imageModal.classList.add('flex');
+        imageModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeImageModal = () => {
+        imageModal.classList.add('hidden');
+        imageModal.classList.remove('flex');
+        imageModal.setAttribute('aria-hidden', 'true');
+        imageModalPreview.removeAttribute('src');
+      };
+
+      const buildDetailsGrid = (record) => {
+        const fields = [
+          { label: 'Fecha/Hora', value: formatDateTime(record.fecha_hora), icon: 'ph-calendar-blank' },
+          { label: 'Tipo de Vehículo', value: safeText(record.tipo_vehiculo), icon: 'ph-car-profile' },
+          { label: 'Placa', value: safeText(record.placa_texto), icon: 'ph-identification-card' },
+          { label: 'Conductor', value: safeText(record.nombre), icon: 'ph-user' },
+          { label: 'Cédula', value: safeText(record.cedula_texto), icon: 'ph-address-book' },
+          { label: 'Destino', value: safeText(record.destino), icon: 'ph-map-pin' },
+          { label: 'Detalles', value: safeText(record.detalles), icon: 'ph-note' }
+        ];
+
+        return fields.map((field) => `
+          <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+              <i class="ph ${field.icon} text-base"></i>
+              <span>${field.label}</span>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-gray-100 break-words">${field.value}</p>
+          </div>
+        `).join('');
+      };
+
+      const openDetailsModal = (record) => {
+        detailsModalTitle.textContent = `${safeText(record.placa_texto)} · ${safeText(record.nombre)}`;
+        detailsModalContent.innerHTML = `
+          ${buildDetailsGrid(record)}
+          <div class="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+              <i class="ph ph-camera text-base"></i>
+              <span>Imágenes</span>
+            </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${record.placa_foto_base64 || ''}" data-image-title="Foto de placa">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-sm font-semibold text-white">Placa</p>
+                  <i class="ph ph-eye text-cyan-300"></i>
+                </div>
+                <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
+                  ${record.placa_foto_base64 ? `<img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+                </div>
+              </button>
+              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${record.cedula_foto_base64 || ''}" data-image-title="Foto de cédula">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-sm font-semibold text-white">Cédula</p>
+                  <i class="ph ph-eye text-cyan-300"></i>
+                </div>
+                <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
+                  ${record.cedula_foto_base64 ? `<img src="${record.cedula_foto_base64}" alt="Foto de cédula" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+                </div>
+              </button>
+            </div>
+          </div>
+        `;
+
+        detailsModal.classList.remove('hidden');
+        detailsModal.classList.add('flex');
+        detailsModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeDetailsModal = () => {
+        detailsModal.classList.add('hidden');
+        detailsModal.classList.remove('flex');
+        detailsModal.setAttribute('aria-hidden', 'true');
+        detailsModalContent.innerHTML = '';
+      };
+
+      const buildDesktopRow = (record) => {
+        const thumbnail = record.placa_foto_base64
+          ? `<button type="button" class="group mt-2 inline-flex items-center gap-2 rounded-xl border border-cyan-500/15 bg-gray-900/70 p-2 text-left transition hover:border-cyan-400/35 hover:bg-cyan-500/5" data-image-src="${record.placa_foto_base64}" data-image-title="Foto de placa">
+              <img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-11 w-11 rounded-lg border border-white/5 object-cover" />
+              <span class="text-xs text-gray-400">Ver imagen</span>
+            </button>`
+          : '<span class="mt-2 inline-flex rounded-lg border border-gray-700 bg-gray-900 px-2 py-1 text-xs text-gray-500">Sin foto</span>';
+
+        return `
+          <tr class="align-top hover:bg-gray-900/60 transition">
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${formatDateTime(record.fecha_hora)}</div>
+              <div class="mt-1 text-xs text-gray-500">${safeText(record.tipo_vehiculo)}</div>
+            </td>
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${safeText(record.placa_texto)}</div>
+              ${thumbnail}
+            </td>
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${safeText(record.nombre)}</div>
+              <div class="mt-1 text-xs text-gray-500">${safeText(record.cedula_texto)}</div>
+            </td>
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${safeText(record.destino)}</div>
+              <div class="mt-1 max-w-xs text-xs leading-5 text-gray-400 break-words">${safeText(record.detalles)}</div>
+            </td>
+            <td class="px-5 py-4">
+              <button type="button" class="inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20" data-action="details">
+                <i class="ph ph-eye text-lg"></i>
+                Ver
+              </button>
+            </td>
+          </tr>
+        `;
+      };
+
+      const buildMobileCard = (record) => {
+        const placaThumbnail = record.placa_foto_base64
+          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${record.placa_foto_base64}" data-image-title="Foto de placa">
+              <img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-44 w-full object-cover" />
+            </button>`
+          : `<div class="flex h-44 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900 text-sm text-gray-500">Sin foto de placa</div>`;
+
+        const cedulaThumbnail = record.cedula_foto_base64
+          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${record.cedula_foto_base64}" data-image-title="Foto de cédula">
+              <img src="${record.cedula_foto_base64}" alt="Foto de cédula" class="h-44 w-full object-cover" />
+            </button>`
+          : `<div class="flex h-44 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900 text-sm text-gray-500">Sin foto de cédula</div>`;
+
+        return `
+          <article class="glass-panel rounded-[1.5rem] border border-cyan-500/20 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <div class="rounded-2xl border border-white/5 bg-white/5 p-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Fecha/Hora</p>
+                  <h3 class="mt-2 text-lg font-bold text-white">${formatDateTime(record.fecha_hora)}</h3>
+                </div>
+                <span class="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">${safeText(record.tipo_vehiculo)}</span>
+              </div>
+            </div>
+
+            <div class="mt-4 grid gap-3">
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                  <i class="ph ph-user text-base"></i>
+                  <span>Conductor</span>
+                </div>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.nombre)}</p>
+                <p class="mt-1 text-xs text-gray-500">Cédula: ${safeText(record.cedula_texto)}</p>
+              </div>
+
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                  <i class="ph ph-car-profile text-base"></i>
+                  <span>Placa</span>
+                </div>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.placa_texto)}</p>
+                <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                  ${placaThumbnail}
+                  ${cedulaThumbnail}
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                  <i class="ph ph-map-pin text-base"></i>
+                  <span>Destino</span>
+                </div>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.destino)}</p>
+              </div>
+
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                  <i class="ph ph-note text-base"></i>
+                  <span>Detalles</span>
+                </div>
+                <p class="mt-2 text-sm leading-6 text-gray-300 break-words">${safeText(record.detalles)}</p>
+              </div>
+
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-300 border border-cyan-500/20 transition hover:bg-cyan-500/20" data-action="details">
+                <i class="ph ph-file-text text-lg"></i>
+                Ver detalle completo
+              </button>
+            </div>
+          </article>
+        `;
+      };
+
+      const renderRecords = () => {
+        const filtered = getFilteredRecords();
+        counterLabel.textContent = `${filtered.length} registro${filtered.length === 1 ? '' : 's'}`;
+
+        emptyState.classList.toggle('hidden', filtered.length !== 0);
+
+        desktopTableBody.innerHTML = filtered.map(buildDesktopRow).join('');
+        mobileCardsContainer.innerHTML = filtered.map(buildMobileCard).join('');
+
+        const detailButtons = document.querySelectorAll('[data-action="details"]');
+        detailButtons.forEach((button, index) => {
+          const record = filtered[index];
+          if (record) {
+            button.addEventListener('click', () => openDetailsModal(record));
+          }
+        });
+
+        document.querySelectorAll('[data-image-src]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const src = button.getAttribute('data-image-src');
+            const title = button.getAttribute('data-image-title') || 'Imagen';
+            openImageModal(src, title);
+          });
+        });
+      };
+
+      const toCsvValue = (value) => {
+        const text = safeText(value).replace(/"/g, '""');
+        return `"${text}"`;
+      };
+
+      const exportCsv = () => {
+        const records = getFilteredRecords();
+        if (records.length === 0) {
+          return;
+        }
+
+        const header = [
+          'Fecha/Hora',
+          'Tipo de Vehículo',
+          'Placa Texto',
+          'Placa Foto Base64',
+          'Nombre del Conductor',
+          'Cédula Texto',
+          'Cédula Foto Base64',
+          'Destino',
+          'Detalles'
+        ];
+
+        const rows = records.map((record) => [
+          toCsvValue(formatDateTime(record.fecha_hora)),
+          toCsvValue(record.tipo_vehiculo),
+          toCsvValue(record.placa_texto),
+          toCsvValue(record.placa_foto_base64),
+          toCsvValue(record.nombre),
+          toCsvValue(record.cedula_texto),
+          toCsvValue(record.cedula_foto_base64),
+          toCsvValue(record.destino),
+          toCsvValue(record.detalles)
+        ].join(','));
+
+        const csvContent = [header.join(','), ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `JaguarSecurity_Bitacora_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      };
+
+      const nombreCompleto = sessionData?.nombre && sessionData?.apellido
+        ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
+        : 'Operador';
+
+      const iniciales = sessionData?.nombre && sessionData?.apellido
+        ? `${sessionData.nombre.charAt(0)}${sessionData.apellido.charAt(0)}`.toUpperCase()
+        : '--';
+
+      if (userNameDisplay) {
+        userNameDisplay.textContent = nombreCompleto;
+      }
+
+      if (userInitialsDisplay) {
+        userInitialsDisplay.textContent = iniciales;
+      }
+
+      if (userRoleDisplay && sessionData?.usuarioRed) {
+        userRoleDisplay.textContent = `Usuario: ${sessionData.usuarioRed}`;
+      }
+
+      fechaActual.textContent = new Date().toLocaleDateString('es-NI', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const setSidebarState = (collapsed) => {
+        const mobile = isMobileViewport();
+
+        sidebar.classList.toggle('w-0', collapsed && mobile);
+        sidebar.classList.toggle('w-20', collapsed && !mobile);
+        sidebar.classList.toggle('w-72', !collapsed);
+        sidebar.classList.toggle('-translate-x-full', collapsed && mobile);
+        sidebar.classList.toggle('translate-x-0', !collapsed || !mobile);
+        sidebar.classList.toggle('pointer-events-none', collapsed && mobile);
+        sidebar.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+
+        sidebarLogo.classList.toggle('opacity-0', collapsed);
+        sidebarLogo.classList.toggle('hidden', collapsed);
+        sidebarLogo.classList.toggle('translate-x-[20px]', !collapsed);
+
+        sidebarHeader.classList.toggle('justify-between', !collapsed);
+        sidebarHeader.classList.toggle('justify-center', collapsed);
+        sidebarHeader.classList.toggle('px-4', !collapsed);
+        sidebarHeader.classList.toggle('px-0', collapsed);
+
+        sidebarTitle.classList.toggle('opacity-100', !collapsed);
+        sidebarTitle.classList.toggle('opacity-0', collapsed);
+        sidebarTitle.classList.toggle('max-h-10', !collapsed);
+        sidebarTitle.classList.toggle('max-h-0', collapsed);
+
+        sidebarLabels.forEach((label) => {
+          label.classList.toggle('opacity-100', !collapsed);
+          label.classList.toggle('opacity-0', collapsed);
+          label.classList.toggle('w-auto', !collapsed);
+          label.classList.toggle('w-0', collapsed);
+        });
+
+        sidebarUserInfo.classList.toggle('opacity-100', !collapsed);
+        sidebarUserInfo.classList.toggle('opacity-0', collapsed);
+        sidebarUserInfo.classList.toggle('max-w-full', !collapsed);
+        sidebarUserInfo.classList.toggle('max-w-0', collapsed);
+
+        sidebarFooter.classList.toggle('p-4', !collapsed);
+        sidebarFooter.classList.toggle('p-2', collapsed);
+
+        footerFlex.classList.toggle('justify-center', collapsed);
+        footerFlex.classList.toggle('px-1', collapsed);
+        footerFlex.classList.toggle('p-3', !collapsed);
+        footerFlex.classList.toggle('gap-3', !collapsed);
+        footerFlex.classList.toggle('gap-0', collapsed);
+
+        if (logoutButton) {
+          logoutButton.classList.toggle('hidden', collapsed);
+        }
+
+        sidebarToggle.classList.toggle('ml-2', !collapsed);
+        sidebarToggle.classList.toggle('ml-0', collapsed);
+        sidebarToggle.classList.toggle('opacity-100', !collapsed);
+        sidebarToggle.classList.toggle('opacity-0', collapsed && mobile);
+        sidebarToggle.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+        sidebarToggle.classList.toggle('pointer-events-none', collapsed && mobile);
+
+        sidebarToggleExternal.classList.toggle('hidden', !collapsed);
+        sidebarToggleExternal.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+
+        sidebarToggle.setAttribute(
+          'aria-label',
+          collapsed ? 'Expandir módulos operativos' : 'Colapsar módulos operativos'
+        );
+
+        sidebarToggleIcon.className = collapsed
+          ? 'ph ph-caret-double-right text-lg'
+          : 'ph ph-caret-double-left text-lg';
+      };
+
+      let sidebarCollapsed = isMobileViewport();
+      setSidebarState(sidebarCollapsed);
+
+      sidebarToggle.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      sidebarToggleExternal.addEventListener('click', () => {
+        sidebarCollapsed = false;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      window.addEventListener('resize', () => {
+        const mobile = isMobileViewport();
+        if (mobile && !sidebarCollapsed) {
+          sidebarCollapsed = true;
+          setSidebarState(sidebarCollapsed);
+        } else if (!mobile && sidebar.classList.contains('w-0')) {
+          sidebarCollapsed = false;
+          setSidebarState(sidebarCollapsed);
+        }
+      });
+
+      const openLogoutModal = () => {
+        if (!logoutModal) {
+          window.location.href = 'login.html';
+          return;
+        }
+        logoutModal.classList.remove('hidden');
+        logoutModal.classList.add('flex');
+        logoutModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeLogoutModal = () => {
+        if (!logoutModal) {
+          return;
+        }
+        logoutModal.classList.add('hidden');
+        logoutModal.classList.remove('flex');
+        logoutModal.setAttribute('aria-hidden', 'true');
+      };
+
+      if (logoutButton) {
+        logoutButton.addEventListener('click', openLogoutModal);
+      }
+
+      if (cancelLogoutButton) {
+        cancelLogoutButton.addEventListener('click', closeLogoutModal);
+      }
+
+      if (confirmLogoutButton) {
+        confirmLogoutButton.addEventListener('click', () => {
+          localStorage.removeItem('JaguarSession');
+          window.location.href = 'login.html';
+        });
+      }
+
+      if (logoutModal) {
+        logoutModal.addEventListener('click', (event) => {
+          if (event.target === logoutModal) {
+            closeLogoutModal();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+            closeLogoutModal();
+          }
+        });
+      }
+
+      if (imageModal) {
+        imageModal.addEventListener('click', (event) => {
+          if (event.target === imageModal) {
+            closeImageModal();
+          }
+        });
+      }
+
+      closeImageModalButton.addEventListener('click', closeImageModal);
+      closeDetailsModalButton.addEventListener('click', closeDetailsModal);
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          if (imageModal && !imageModal.classList.contains('hidden')) {
+            closeImageModal();
+          }
+
+          if (detailsModal && !detailsModal.classList.contains('hidden')) {
+            closeDetailsModal();
+          }
+        }
+      });
+
+      detailsModal.addEventListener('click', (event) => {
+        if (event.target === detailsModal) {
+          closeDetailsModal();
+        }
+      });
+
+      detailsModalContent.addEventListener('click', (event) => {
+        const imageButton = event.target.closest('[data-image-src]');
+        if (!imageButton) {
+          return;
+        }
+
+        const src = imageButton.getAttribute('data-image-src');
+        const title = imageButton.getAttribute('data-image-title') || 'Imagen';
+        openImageModal(src, title);
+      });
+
+      searchInput.addEventListener('input', renderRecords);
+      exportCsvButton.addEventListener('click', exportCsv);
+
+      renderRecords();
+    </script>
+  </body>
+</html>
