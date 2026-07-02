@@ -628,7 +628,7 @@
         image.src = objectUrl;
       });
 
-      const setPreview = (imgElement, wrapElement, fileButton, base64) => {
+      function setPreview(imgElement, wrapElement, fileButton, base64) {
         if (base64) {
           imgElement.src = base64;
           wrapElement.classList.remove('hidden');
@@ -644,7 +644,7 @@
             fileButton.classList.remove('hidden');
           }
         }
-      };
+      }
 
       btnPlacaFoto.addEventListener('click', () => placaFotoInput.click());
       btnCedulaFoto.addEventListener('click', () => cedulaFotoInput.click());
@@ -838,7 +838,7 @@
 
       registroForm.addEventListener('submit', (event) => {
         event.preventDefault();
-
+        console.log('registro submit start', { editMode, editSourceIndex, editIndexParam });
         updateCedulaInput();
 
         if (!conductorNombre.value.trim()) {
@@ -853,61 +853,87 @@
 
         const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
         const formValues = {
-          tipo: tipoVehiculo.value.trim(),
-          tipo_vehiculo: tipoVehiculo.value.trim(),
-          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
-          porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
-          placa: placaTexto.value.trim(),
-          placa_texto: placaTexto.value.trim(),
-          conductor: conductorNombre.value.trim(),
-          nombre: conductorNombre.value.trim(),
-          cedula: cedulaTexto.value.trim(),
-          cedula_texto: cedulaTexto.value.trim(),
-          destino: destino.value.trim(),
-          detalles: detalles.value.trim(),
-          operador_turno: nombreOperador,
-          fotoPlaca: placaFotoBase64,
-          placa_foto_base64: placaFotoBase64,
-          fotoCedula: cedulaFotoBase64,
-          cedula_foto_base64: cedulaFotoBase64
-        };
+        tipo: tipoVehiculo.value.trim(),
+        tipo_vehiculo: tipoVehiculo.value.trim(),
 
-        if (editMode && Number.isInteger(editSourceIndex) && editSourceIndex >= 0 && editSourceIndex < registrosGuardados.length) {
-          const registroAntiguo = registrosGuardados[editSourceIndex] || null;
-          if (!registroAntiguo) {
-            showToast('Error de edición', 'No se encontró el registro a actualizar.', 'error');
+        porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+        porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+
+        placa: placaTexto.value.trim(),
+        placa_texto: placaTexto.value.trim(),
+
+        conductor: conductorNombre.value.trim(),
+        nombre: conductorNombre.value.trim(),
+
+        cedula: cedulaTexto.value.trim(),
+        cedula_texto: cedulaTexto.value.trim(),
+
+        destino: destino.value.trim(),
+        detalles: detalles.value.trim(),
+
+        operador_turno: nombreOperador,
+
+        fotoPlaca: placaFotoBase64,
+        placa_foto_base64: placaFotoBase64,
+
+        fotoCedula: cedulaFotoBase64,
+        cedula_foto_base64: cedulaFotoBase64
+      };
+
+       try {
+         console.log('registro: registrosGuardados length', registrosGuardados.length);
+          // 1. Forzamos la conversión del índice a número real
+          const index = parseInt(editSourceIndex, 10);
+
+          // 2. Evaluamos con el número convertido (!isNaN) en lugar de isInteger
+          if (editMode && !isNaN(index) && index >= 0 && index < registrosGuardados.length) {
+            const registroAntiguo = registrosGuardados[index] || null;
+            
+            if (!registroAntiguo) {
+              showToast('Error de edición', 'No se encontró el registro original.', 'error');
+              return;
+            }
+
+            const nuevoRegistro = {
+              ...formValues,
+              ...(registroAntiguo.fecha ? { fecha: registroAntiguo.fecha } : {}),
+              ...(registroAntiguo.fecha_hora ? { fecha_hora: registroAntiguo.fecha_hora } : {})
+            };
+            console.log('guardando edición idx', index, nuevoRegistro);
+            registrosGuardados[index] = nuevoRegistro;
+            localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
+            console.log('registro guardado en localStorage (edición)');
+
+            showToast('Registro actualizado', 'Los cambios se guardaron correctamente.');
+            setTimeout(() => {
+              window.location.href = 'bitacora.html';
+            }, 400);
             return;
           }
 
           const nuevoRegistro = {
+            fecha: new Date().toISOString(),
             ...formValues
           };
 
-          if ('fecha' in registroAntiguo) {
-            nuevoRegistro.fecha = registroAntiguo.fecha;
-          }
-
-          if ('fecha_hora' in registroAntiguo) {
-            nuevoRegistro.fecha_hora = registroAntiguo.fecha_hora;
-          }
-
-          registrosGuardados[editSourceIndex] = nuevoRegistro;
+          console.log('guardando nuevo registro', nuevoRegistro);
+          registrosGuardados.push(nuevoRegistro);
           localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
-          showToast('Registro actualizado', 'Los cambios se guardaron correctamente.');
-          window.location.href = 'bitacora.html';
-          return;
+          console.log('registro guardado en localStorage (nuevo)');
+
+          showToast('Vehículo Registrado Exitosamente', 'El ingreso fue almacenado en el sistema local.');
+          setTimeout(() => { window.location.href = 'bitacora.html'; }, 500);
+          
+        } catch (error) {
+          console.error("Error al guardar:", error);
+          if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+            showToast('Memoria Llena', 'No hay espacio local.', 'error');
+          } else {
+            showToast('Error del sistema', 'Hubo un problema al intentar guardar los datos.', 'error');
+          }
         }
-
-        const nuevoRegistro = {
-          fecha: new Date().toISOString(),
-          ...formValues
-        };
-
-        registrosGuardados.push(nuevoRegistro);
-        localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
-        showToast('Vehículo Registrado Exitosamente', 'El ingreso fue almacenado en el sistema local.');
-        window.location.href = 'bitacora.html';
-      });
+      }); 
+          
 
       document.addEventListener('DOMContentLoaded', () => {
         const bgVideo = document.getElementById('bgVideo');

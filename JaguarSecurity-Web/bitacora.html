@@ -342,10 +342,14 @@
       };
 
       const getMisRegistros = () => {
-        const nombreOperadorActivo = getNombreOperadorActivo();
+        const nombreOperadorActivoRaw = getNombreOperadorActivo();
+        const nombreOperadorActivo = limpiarTexto(String(nombreOperadorActivoRaw || '')).toLowerCase();
         return getAllRecords()
           .map((registro, originalIndex) => ({ registro, originalIndex }))
-          .filter(({ registro }) => getRecordValue(registro, 'operador_turno') === nombreOperadorActivo);
+          .filter(({ registro }) => {
+            const registroOperador = limpiarTexto(String(getRecordValue(registro, 'operador_turno') || '')).toLowerCase();
+            return registroOperador === nombreOperadorActivo;
+          });
       };
 
       const buildRecordKey = (record) => [
@@ -453,43 +457,45 @@
       };
 
       const openDetailsModal = (record) => {
-        detailsModalTitle.textContent = `${safeText(getRecordValue(record, 'placa', 'placa_texto'))} · ${safeText(getRecordValue(record, 'conductor', 'nombre'))}`;
-        const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
-        const fotoCedula = getRecordValue(record, 'fotoCedula', 'cedula_foto_base64');
-        detailsModalContent.innerHTML = `
-          ${buildDetailsGrid(record)}
-          <div class="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
-            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
-              <i class="ph ph-camera text-base"></i>
-              <span>Imágenes</span>
-            </div>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2">
-              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoPlaca || ''}" data-image-title="Foto de placa">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="text-sm font-semibold text-white">Placa</p>
-                  <i class="ph ph-eye text-cyan-300"></i>
-                </div>
-                <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
-                  ${fotoPlaca ? `<img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
-                </div>
-              </button>
-              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoCedula || ''}" data-image-title="Foto de cédula">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="text-sm font-semibold text-white">Cédula</p>
-                  <i class="ph ph-eye text-cyan-300"></i>
-                </div>
-                <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
-                  ${fotoCedula ? `<img src="${fotoCedula}" alt="Foto de cédula" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
-                </div>
-              </button>
-            </div>
-          </div>
-        `;
+  detailsModalTitle.textContent = `${safeText(getRecordValue(record, 'placa', 'placa_texto'))} · ${safeText(getRecordValue(record, 'conductor', 'nombre'))}`;
 
-        detailsModal.classList.remove('hidden');
-        detailsModal.classList.add('flex');
-        detailsModal.setAttribute('aria-hidden', 'false');
-      };
+  const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
+  const fotoCedula = getRecordValue(record, 'fotoCedula', 'cedula_foto_base64');
+
+  detailsModalContent.innerHTML = `
+    ${buildDetailsGrid(record)}
+    <div class="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+      <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+        <i class="ph ph-camera text-base"></i>
+        <span>Imágenes</span>
+      </div>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoPlaca || ''}" data-image-title="Foto de placa">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold text-white">Placa</p>
+            <i class="ph ph-eye text-cyan-300"></i>
+          </div>
+          <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
+            ${fotoPlaca ? `<img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+          </div>
+        </button>
+        <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoCedula || ''}" data-image-title="Foto de cédula">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold text-white">Cédula</p>
+            <i class="ph ph-eye text-cyan-300"></i>
+          </div>
+          <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
+            ${fotoCedula ? `<img src="${fotoCedula}" alt="Foto de cédula" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+          </div>
+        </button>
+      </div>
+    </div>
+  `;
+
+  detailsModal.classList.remove('hidden');
+  detailsModal.classList.add('flex');
+  detailsModal.setAttribute('aria-hidden', 'false');
+};
 
       const closeDetailsModal = () => {
         detailsModal.classList.add('hidden');
@@ -510,7 +516,7 @@
         const destino = getRecordValue(record, 'destino');
         const operador = getRecordValue(record, 'operador_turno');
         const detalles = getRecordValue(record, 'detalles');
-        const thumbnail = fotoPlaca
+        const thumbnail = record.placa_foto_base64
           ? `<button type="button" class="group mt-2 inline-flex items-center gap-2 rounded-xl border border-cyan-500/15 bg-gray-900/70 p-2 text-left transition hover:border-cyan-400/35 hover:bg-cyan-500/5" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
               <img src="${fotoPlaca}" alt="Foto de placa" class="h-11 w-11 rounded-lg border border-white/5 object-cover" />
               <span class="text-xs text-gray-400">Ver imagen</span>
@@ -569,7 +575,7 @@
         const destino = getRecordValue(record, 'destino');
         const operador = getRecordValue(record, 'operador_turno');
         const detalles = getRecordValue(record, 'detalles');
-        const placaThumbnail = fotoPlaca
+        const placaThumbnail = record.placa_foto_base64
           ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
               <img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover" />
             </button>`
@@ -654,6 +660,7 @@
 
       const renderRecords = () => {
         const filtered = getFilteredRecords();
+        console.log('renderRecords', { totalRecords: getAllRecords().length, filteredCount: filtered.length });
         counterLabel.textContent = `${filtered.length} registro${filtered.length === 1 ? '' : 's'}`;
 
         emptyState.classList.toggle('hidden', filtered.length !== 0);
@@ -661,6 +668,9 @@
         desktopTableBody.innerHTML = filtered.map(({ registro, originalIndex }) => buildDesktopRow(registro, originalIndex)).join('');
         mobileCardsContainer.innerHTML = filtered.map(({ registro, originalIndex }) => buildMobileCard(registro, originalIndex)).join('');
       };
+
+      // añadir log para acciones en botones (útil para debugging de edición)
+      const originalHandleRecordAction = (() => {});
 
       const toCsvValue = (value) => {
         const text = safeText(value).replace(/"/g, '""');
@@ -777,35 +787,10 @@
         const record = recordEntry.registro;
 
         const action = actionButton.getAttribute('data-action');
+        console.log('handleRecordAction', { action, recordKey, recordEntry });
         if (action === 'details') {
           openDetailsModal(record);
-          return;        const formValues = {
-          tipo: tipoVehiculo.value.trim(),
-          tipo_vehiculo: tipoVehiculo.value.trim(),
-        
-          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
-          porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
-        
-          placa: placaTexto.value.trim(),
-          placa_texto: placaTexto.value.trim(),
-        
-          conductor: conductorNombre.value.trim(),
-          nombre: conductorNombre.value.trim(),
-        
-          cedula: cedulaTexto.value.trim(),
-          cedula_texto: cedulaTexto.value.trim(),
-        
-          destino: destino.value.trim(),
-          detalles: detalles.value.trim(),
-        
-          operador_turno: nombreOperador,
-        
-          fotoPlaca: placaFotoBase64,
-          placa_foto_base64: placaFotoBase64,
-        
-          fotoCedula: cedulaFotoBase64,
-          cedula_foto_base64: cedulaFotoBase64
-        };
+          return;
         }
 
         if (action === 'edit') {
@@ -1028,7 +1013,17 @@
         }
       });
 
-      renderRecords();
+     const initializeRecords = () => renderRecords();
+
+    if (document.readyState === 'loading') {
+     document.addEventListener('DOMContentLoaded', initializeRecords);
+    } else {
+     initializeRecords();
+}
+
+window.addEventListener('pageshow', initializeRecords);
+
+      
     </script>
   </body>
 </html>
