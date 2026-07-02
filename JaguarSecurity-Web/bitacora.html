@@ -107,13 +107,6 @@
           <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
         </a>
 
-        <a
-          href="#"
-          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
-        >
-          <i class="ph ph-file-csv text-xl group-hover:text-cyan-400 transition shrink-0"></i>
-          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Generar Reporte .csv</span>
-        </a>
       </nav>
 
       <div
@@ -254,7 +247,7 @@
       </div>
     </main>
 
-    <div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/85 px-4 backdrop-blur-sm" aria-hidden="true">
+    <div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-950/85 px-4 backdrop-blur-sm" aria-hidden="true">
       <div class="w-full max-w-4xl rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.55)] sm:p-6">
         <div class="flex items-center justify-between gap-4 border-b border-white/5 pb-4">
           <div>
@@ -290,8 +283,6 @@
 
     <script>
       const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
-      const registros = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
-
       const fechaActual = document.getElementById('fechaActual');
       const counterLabel = document.getElementById('counterLabel');
       const searchInput = document.getElementById('searchInput');
@@ -331,6 +322,48 @@
       const userRoleDisplay = document.getElementById('userRoleDisplay');
       const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
 
+      const getNombreOperadorActivo = () => (
+        sessionData?.nombre && sessionData?.apellido
+          ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
+          : 'Operador Desconocido'
+      );
+
+      const getAllRecords = () => JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+
+      const getRecordValue = (record, ...keys) => {
+        for (const key of keys) {
+          const value = record?.[key];
+          if (value !== undefined && value !== null && String(value).trim() !== '') {
+            return value;
+          }
+        }
+
+        return '';
+      };
+
+      const getMisRegistros = () => {
+        const nombreOperadorActivo = getNombreOperadorActivo();
+        return getAllRecords()
+          .map((registro, originalIndex) => ({ registro, originalIndex }))
+          .filter(({ registro }) => getRecordValue(registro, 'operador_turno') === nombreOperadorActivo);
+      };
+
+      const buildRecordKey = (record) => [
+        getRecordValue(record, 'fecha', 'fecha_hora'),
+        getRecordValue(record, 'operador_turno'),
+        getRecordValue(record, 'placa', 'placa_texto'),
+        getRecordValue(record, 'conductor', 'nombre'),
+        getRecordValue(record, 'cedula', 'cedula_texto'),
+        getRecordValue(record, 'destino'),
+        getRecordValue(record, 'detalles')
+      ].join('||');
+
+      const removeRecordByKey = (recordKey) => {
+        const remainingRecords = getAllRecords().filter((record) => buildRecordKey(record) !== recordKey);
+        localStorage.setItem('JaguarRegistros', JSON.stringify(remainingRecords));
+        renderRecords();
+      };
+
       const formatDateTime = (value) => {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) {
@@ -345,19 +378,23 @@
 
       const safeText = (value) => (value && String(value).trim() ? String(value) : 'N/D');
 
-      const getRecords = () => JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+      const limpiarTexto = (value) => String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/ñ/g, 'n')
+        .replace(/Ñ/g, 'N');
 
       const getFilteredRecords = () => {
         const query = searchInput.value.trim().toLowerCase();
-        const source = getRecords();
+        const source = getMisRegistros();
 
         if (!query) {
           return source;
         }
 
-        return source.filter((record) => {
-          const placa = safeText(record.placa_texto).toLowerCase();
-          const conductor = safeText(record.nombre).toLowerCase();
+        return source.filter(({ registro }) => {
+          const placa = safeText(getRecordValue(registro, 'placa', 'placa_texto')).toLowerCase();
+          const conductor = safeText(getRecordValue(registro, 'conductor', 'nombre')).toLowerCase();
           return placa.includes(query) || conductor.includes(query);
         });
       };
@@ -382,14 +419,26 @@
       };
 
       const buildDetailsGrid = (record) => {
+        const fecha = getRecordValue(record, 'fecha', 'fecha_hora');
+        const porton = getRecordValue(record, 'porton', 'porton_ingreso');
+        const tipo = getRecordValue(record, 'tipo', 'tipo_vehiculo');
+        const placa = getRecordValue(record, 'placa', 'placa_texto');
+        const conductor = getRecordValue(record, 'conductor', 'nombre');
+        const cedula = getRecordValue(record, 'cedula', 'cedula_texto');
+        const destino = getRecordValue(record, 'destino');
+        const operador = getRecordValue(record, 'operador_turno');
+        const detalles = getRecordValue(record, 'detalles');
+
         const fields = [
-          { label: 'Fecha/Hora', value: formatDateTime(record.fecha_hora), icon: 'ph-calendar-blank' },
-          { label: 'Tipo de Vehículo', value: safeText(record.tipo_vehiculo), icon: 'ph-car-profile' },
-          { label: 'Placa', value: safeText(record.placa_texto), icon: 'ph-identification-card' },
-          { label: 'Conductor', value: safeText(record.nombre), icon: 'ph-user' },
-          { label: 'Cédula', value: safeText(record.cedula_texto), icon: 'ph-address-book' },
-          { label: 'Destino', value: safeText(record.destino), icon: 'ph-map-pin' },
-          { label: 'Detalles', value: safeText(record.detalles), icon: 'ph-note' }
+          { label: 'Fecha/Hora', value: formatDateTime(fecha), icon: 'ph-calendar-blank' },
+          { label: 'Portón', value: safeText(porton), icon: 'ph-door-open' },
+          { label: 'Tipo de Vehículo', value: safeText(tipo), icon: 'ph-car-profile' },
+          { label: 'Placa', value: safeText(placa), icon: 'ph-identification-card' },
+          { label: 'Conductor', value: safeText(conductor), icon: 'ph-user' },
+          { label: 'Cédula', value: safeText(cedula), icon: 'ph-address-book' },
+          { label: 'Destino', value: safeText(destino), icon: 'ph-map-pin' },
+          { label: 'Guardia a Cargo', value: safeText(operador), icon: 'ph-user-gear' },
+          { label: 'Detalles', value: safeText(detalles), icon: 'ph-note' }
         ];
 
         return fields.map((field) => `
@@ -404,7 +453,9 @@
       };
 
       const openDetailsModal = (record) => {
-        detailsModalTitle.textContent = `${safeText(record.placa_texto)} · ${safeText(record.nombre)}`;
+        detailsModalTitle.textContent = `${safeText(getRecordValue(record, 'placa', 'placa_texto'))} · ${safeText(getRecordValue(record, 'conductor', 'nombre'))}`;
+        const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
+        const fotoCedula = getRecordValue(record, 'fotoCedula', 'cedula_foto_base64');
         detailsModalContent.innerHTML = `
           ${buildDetailsGrid(record)}
           <div class="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
@@ -413,22 +464,22 @@
               <span>Imágenes</span>
             </div>
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
-              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${record.placa_foto_base64 || ''}" data-image-title="Foto de placa">
+              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoPlaca || ''}" data-image-title="Foto de placa">
                 <div class="flex items-center justify-between gap-3">
                   <p class="text-sm font-semibold text-white">Placa</p>
                   <i class="ph ph-eye text-cyan-300"></i>
                 </div>
                 <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
-                  ${record.placa_foto_base64 ? `<img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+                  ${fotoPlaca ? `<img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
                 </div>
               </button>
-              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${record.cedula_foto_base64 || ''}" data-image-title="Foto de cédula">
+              <button type="button" class="group rounded-2xl border border-gray-800 bg-gray-950/40 p-3 text-left transition hover:border-cyan-400/30 hover:bg-cyan-500/5" data-image-src="${fotoCedula || ''}" data-image-title="Foto de cédula">
                 <div class="flex items-center justify-between gap-3">
                   <p class="text-sm font-semibold text-white">Cédula</p>
                   <i class="ph ph-eye text-cyan-300"></i>
                 </div>
                 <div class="mt-3 overflow-hidden rounded-xl border border-white/5 bg-gray-900">
-                  ${record.cedula_foto_base64 ? `<img src="${record.cedula_foto_base64}" alt="Foto de cédula" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
+                  ${fotoCedula ? `<img src="${fotoCedula}" alt="Foto de cédula" class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />` : `<div class="flex h-44 items-center justify-center text-sm text-gray-500">Sin imagen</div>`}
                 </div>
               </button>
             </div>
@@ -447,64 +498,99 @@
         detailsModalContent.innerHTML = '';
       };
 
-      const buildDesktopRow = (record) => {
+      const buildDesktopRow = (record, index) => {
+        const recordKey = buildRecordKey(record);
+        const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
+        const fecha = getRecordValue(record, 'fecha', 'fecha_hora');
+        const porton = getRecordValue(record, 'porton', 'porton_ingreso');
+        const tipo = getRecordValue(record, 'tipo', 'tipo_vehiculo');
+        const placa = getRecordValue(record, 'placa', 'placa_texto');
+        const conductor = getRecordValue(record, 'conductor', 'nombre');
+        const cedula = getRecordValue(record, 'cedula', 'cedula_texto');
+        const destino = getRecordValue(record, 'destino');
+        const operador = getRecordValue(record, 'operador_turno');
+        const detalles = getRecordValue(record, 'detalles');
         const thumbnail = record.placa_foto_base64
-          ? `<button type="button" class="group mt-2 inline-flex items-center gap-2 rounded-xl border border-cyan-500/15 bg-gray-900/70 p-2 text-left transition hover:border-cyan-400/35 hover:bg-cyan-500/5" data-image-src="${record.placa_foto_base64}" data-image-title="Foto de placa">
-              <img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-11 w-11 rounded-lg border border-white/5 object-cover" />
+          ? `<button type="button" class="group mt-2 inline-flex items-center gap-2 rounded-xl border border-cyan-500/15 bg-gray-900/70 p-2 text-left transition hover:border-cyan-400/35 hover:bg-cyan-500/5" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
+              <img src="${fotoPlaca}" alt="Foto de placa" class="h-11 w-11 rounded-lg border border-white/5 object-cover" />
               <span class="text-xs text-gray-400">Ver imagen</span>
             </button>`
           : '<span class="mt-2 inline-flex rounded-lg border border-gray-700 bg-gray-900 px-2 py-1 text-xs text-gray-500">Sin foto</span>';
 
         return `
-          <tr class="align-top hover:bg-gray-900/60 transition">
+          <tr class="align-top hover:bg-gray-900/60 transition" data-record-key="${recordKey}">
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${formatDateTime(record.fecha_hora)}</div>
-              <div class="mt-1 text-xs text-gray-500">${safeText(record.tipo_vehiculo)}</div>
+              <div class="text-sm font-semibold text-white">${formatDateTime(fecha)}</div>
+              <div class="mt-1 text-xs text-gray-500">${safeText(porton)}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.placa_texto)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(placa)}</div>
               ${thumbnail}
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.nombre)}</div>
-              <div class="mt-1 text-xs text-gray-500">${safeText(record.cedula_texto)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(conductor)}</div>
+              <div class="mt-1 text-xs text-gray-500">${safeText(cedula)}</div>
+              <div class="mt-1 text-xs text-cyan-300">Guardia: ${safeText(operador)}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.destino)}</div>
-              <div class="mt-1 max-w-xs text-xs leading-5 text-gray-400 break-words">${safeText(record.detalles)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(destino)}</div>
+              <div class="mt-1 max-w-xs text-xs leading-5 text-gray-400 break-words">${safeText(detalles)}</div>
             </td>
             <td class="px-5 py-4">
-              <button type="button" class="inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20" data-action="details">
-                <i class="ph ph-eye text-lg"></i>
-                Ver
-              </button>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20" data-action="details" data-record-key="${recordKey}">
+                  <i class="ph ph-eye text-lg"></i>
+                  Ver
+                </button>
+                <button type="button" class="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 text-sm font-semibold text-amber-300 transition hover:bg-amber-500/20" data-action="edit" data-record-index="${index}" onclick="window.location.href='registro.html?editIndex=${index}'">
+                  <i class="ph ph-pencil text-lg"></i>
+                  Editar
+                </button>
+                <button type="button" class="inline-flex h-10 items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-sm font-semibold text-red-300 transition hover:bg-red-500/20" data-action="delete" data-record-key="${recordKey}">
+                  <i class="ph ph-trash text-lg"></i>
+                  Eliminar
+                </button>
+              </div>
             </td>
           </tr>
         `;
       };
 
-      const buildMobileCard = (record) => {
+      const buildMobileCard = (record, index) => {
+        const recordKey = buildRecordKey(record);
+        const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
+        const fotoCedula = getRecordValue(record, 'fotoCedula', 'cedula_foto_base64');
+        const fecha = getRecordValue(record, 'fecha', 'fecha_hora');
+        const porton = getRecordValue(record, 'porton', 'porton_ingreso');
+        const tipo = getRecordValue(record, 'tipo', 'tipo_vehiculo');
+        const placa = getRecordValue(record, 'placa', 'placa_texto');
+        const conductor = getRecordValue(record, 'conductor', 'nombre');
+        const cedula = getRecordValue(record, 'cedula', 'cedula_texto');
+        const destino = getRecordValue(record, 'destino');
+        const operador = getRecordValue(record, 'operador_turno');
+        const detalles = getRecordValue(record, 'detalles');
         const placaThumbnail = record.placa_foto_base64
-          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${record.placa_foto_base64}" data-image-title="Foto de placa">
-              <img src="${record.placa_foto_base64}" alt="Foto de placa" class="h-44 w-full object-cover" />
+          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
+              <img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover" />
             </button>`
           : `<div class="flex h-44 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900 text-sm text-gray-500">Sin foto de placa</div>`;
 
-        const cedulaThumbnail = record.cedula_foto_base64
-          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${record.cedula_foto_base64}" data-image-title="Foto de cédula">
-              <img src="${record.cedula_foto_base64}" alt="Foto de cédula" class="h-44 w-full object-cover" />
+        const cedulaThumbnail = fotoCedula
+          ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${fotoCedula}" data-image-title="Foto de cédula">
+              <img src="${fotoCedula}" alt="Foto de cédula" class="h-44 w-full object-cover" />
             </button>`
           : `<div class="flex h-44 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900 text-sm text-gray-500">Sin foto de cédula</div>`;
 
         return `
-          <article class="glass-panel rounded-[1.5rem] border border-cyan-500/20 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <article class="glass-panel rounded-[1.5rem] border border-cyan-500/20 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)]" data-record-key="${recordKey}">
             <div class="rounded-2xl border border-white/5 bg-white/5 p-4">
               <div class="flex items-start justify-between gap-4">
                 <div>
                   <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Fecha/Hora</p>
-                  <h3 class="mt-2 text-lg font-bold text-white">${formatDateTime(record.fecha_hora)}</h3>
+                    <h3 class="mt-2 text-lg font-bold text-white">${formatDateTime(fecha)}</h3>
+                    <p class="mt-2 text-xs text-cyan-300">Portón: ${safeText(porton)}</p>
                 </div>
-                <span class="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">${safeText(record.tipo_vehiculo)}</span>
+                  <span class="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">${safeText(tipo)}</span>
               </div>
             </div>
 
@@ -514,8 +600,9 @@
                   <i class="ph ph-user text-base"></i>
                   <span>Conductor</span>
                 </div>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.nombre)}</p>
-                <p class="mt-1 text-xs text-gray-500">Cédula: ${safeText(record.cedula_texto)}</p>
+                  <p class="mt-2 text-sm font-semibold text-white">${safeText(conductor)}</p>
+                  <p class="mt-1 text-xs text-gray-500">Cédula: ${safeText(cedula)}</p>
+                  <p class="mt-1 text-xs text-cyan-300">Guardia: ${safeText(operador)}</p>
               </div>
 
               <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
@@ -523,7 +610,7 @@
                   <i class="ph ph-car-profile text-base"></i>
                   <span>Placa</span>
                 </div>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.placa_texto)}</p>
+                  <p class="mt-2 text-sm font-semibold text-white">${safeText(placa)}</p>
                 <div class="mt-3 grid gap-3 sm:grid-cols-2">
                   ${placaThumbnail}
                   ${cedulaThumbnail}
@@ -535,7 +622,7 @@
                   <i class="ph ph-map-pin text-base"></i>
                   <span>Destino</span>
                 </div>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.destino)}</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(destino)}</p>
               </div>
 
               <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
@@ -543,13 +630,23 @@
                   <i class="ph ph-note text-base"></i>
                   <span>Detalles</span>
                 </div>
-                <p class="mt-2 text-sm leading-6 text-gray-300 break-words">${safeText(record.detalles)}</p>
+                <p class="mt-2 text-sm leading-6 text-gray-300 break-words">${safeText(detalles)}</p>
               </div>
 
-              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-300 border border-cyan-500/20 transition hover:bg-cyan-500/20" data-action="details">
-                <i class="ph ph-file-text text-lg"></i>
-                Ver detalle completo
-              </button>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-300 border border-cyan-500/20 transition hover:bg-cyan-500/20" data-action="details" data-record-key="${recordKey}">
+                  <i class="ph ph-file-text text-lg"></i>
+                  Ver detalle completo
+                </button>
+                <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-300 border border-amber-500/20 transition hover:bg-amber-500/20" data-action="edit" data-record-index="${index}" onclick="window.location.href='registro.html?editIndex=${index}'">
+                  <i class="ph ph-pencil text-lg"></i>
+                  Editar
+                </button>
+                <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300 border border-red-500/20 transition hover:bg-red-500/20" data-action="delete" data-record-key="${recordKey}">
+                  <i class="ph ph-trash text-lg"></i>
+                  Eliminar registro
+                </button>
+              </div>
             </div>
           </article>
         `;
@@ -561,24 +658,8 @@
 
         emptyState.classList.toggle('hidden', filtered.length !== 0);
 
-        desktopTableBody.innerHTML = filtered.map(buildDesktopRow).join('');
-        mobileCardsContainer.innerHTML = filtered.map(buildMobileCard).join('');
-
-        const detailButtons = document.querySelectorAll('[data-action="details"]');
-        detailButtons.forEach((button, index) => {
-          const record = filtered[index];
-          if (record) {
-            button.addEventListener('click', () => openDetailsModal(record));
-          }
-        });
-
-        document.querySelectorAll('[data-image-src]').forEach((button) => {
-          button.addEventListener('click', () => {
-            const src = button.getAttribute('data-image-src');
-            const title = button.getAttribute('data-image-title') || 'Imagen';
-            openImageModal(src, title);
-          });
-        });
+        desktopTableBody.innerHTML = filtered.map(({ registro, originalIndex }) => buildDesktopRow(registro, originalIndex)).join('');
+        mobileCardsContainer.innerHTML = filtered.map(({ registro, originalIndex }) => buildMobileCard(registro, originalIndex)).join('');
       };
 
       const toCsvValue = (value) => {
@@ -593,35 +674,64 @@
         }
 
         const header = [
-          'Fecha/Hora',
-          'Tipo de Vehículo',
-          'Placa Texto',
-          'Placa Foto Base64',
-          'Nombre del Conductor',
-          'Cédula Texto',
-          'Cédula Foto Base64',
+          'Fecha',
+          'Porton',
+          'Tipo',
+          'Placa',
+          'Conductor',
+          'Cedula',
           'Destino',
-          'Detalles'
+          'Detalles',
+          'Foto Placa',
+          'Foto Cedula',
+          'Guardia'
         ];
 
-        const rows = records.map((record) => [
-          toCsvValue(formatDateTime(record.fecha_hora)),
-          toCsvValue(record.tipo_vehiculo),
-          toCsvValue(record.placa_texto),
-          toCsvValue(record.placa_foto_base64),
-          toCsvValue(record.nombre),
-          toCsvValue(record.cedula_texto),
-          toCsvValue(record.cedula_foto_base64),
-          toCsvValue(record.destino),
-          toCsvValue(record.detalles)
-        ].join(','));
+        let csvContent = 'sep=,\n';
+        csvContent += `${header.join(',')}\n`;
 
-        const csvContent = [header.join(','), ...rows].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        records.forEach((recordEntry) => {
+          const record = recordEntry.registro;
+          const fecha = getRecordValue(record, 'fecha', 'fecha_hora');
+          const porton = getRecordValue(record, 'porton', 'porton_ingreso');
+          const tipo = getRecordValue(record, 'tipo', 'tipo_vehiculo');
+          const placa = getRecordValue(record, 'placa', 'placa_texto');
+          const conductor = getRecordValue(record, 'conductor', 'nombre');
+          const cedula = getRecordValue(record, 'cedula', 'cedula_texto');
+          const destino = getRecordValue(record, 'destino');
+          const detalles = getRecordValue(record, 'detalles');
+          const fotoPlaca = getRecordValue(record, 'fotoPlaca', 'placa_foto_base64');
+          const fotoCedula = getRecordValue(record, 'fotoCedula', 'cedula_foto_base64');
+          const guardia = getRecordValue(record, 'operador_turno');
+
+          csvContent += [
+            toCsvValue(limpiarTexto(formatDateTime(fecha))),
+            toCsvValue(limpiarTexto(porton)),
+            toCsvValue(limpiarTexto(tipo)),
+            toCsvValue(limpiarTexto(placa)),
+            toCsvValue(limpiarTexto(conductor)),
+            toCsvValue(limpiarTexto(cedula)),
+            toCsvValue(limpiarTexto(destino)),
+            toCsvValue(limpiarTexto(detalles)),
+            toCsvValue(limpiarTexto(fotoPlaca ? 'SÍ' : 'NO')),
+            toCsvValue(limpiarTexto(fotoCedula ? 'SÍ' : 'NO')),
+            toCsvValue(limpiarTexto(guardia))
+          ].join(',') + '\n';
+        });
+
+        const encoder = new TextEncoder();
+        const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+        const csvBytes = encoder.encode(csvContent);
+        const blobBytes = new Uint8Array(bom.length + csvBytes.length);
+        blobBytes.set(bom, 0);
+        blobBytes.set(csvBytes, bom.length);
+        const blob = new Blob([blobBytes], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `JaguarSecurity_Bitacora_${new Date().toISOString().slice(0, 10)}.csv`;
+        const fechaArchivo = new Date().toISOString().slice(0, 10);
+        const operadorArchivo = getNombreOperadorActivo().replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') || 'Operador_Desconocido';
+        link.download = `Reporte_${operadorArchivo}_${fechaArchivo}.csv`;
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -647,6 +757,63 @@
       if (userRoleDisplay && sessionData?.usuarioRed) {
         userRoleDisplay.textContent = `Usuario: ${sessionData.usuarioRed}`;
       }
+
+      const handleRecordAction = (event) => {
+        const actionButton = event.target.closest('[data-action]');
+        if (!actionButton) {
+          return;
+        }
+
+        const recordKey = actionButton.getAttribute('data-record-key');
+        if (!recordKey) {
+          return;
+        }
+
+        const recordEntry = getFilteredRecords().find(({ registro }) => buildRecordKey(registro) === recordKey);
+        if (!recordEntry) {
+          return;
+        }
+
+        const record = recordEntry.registro;
+
+        const action = actionButton.getAttribute('data-action');
+        if (action === 'details') {
+          openDetailsModal(record);
+          return;
+        }
+
+        if (action === 'edit') {
+          const editIndex = actionButton.getAttribute('data-record-index') || String(recordEntry.originalIndex);
+          if (editIndex !== null) {
+            window.location.href = `registro.html?editIndex=${editIndex}`;
+          }
+          return;
+        }
+
+        if (action === 'delete') {
+          const confirmed = window.confirm(`¿Eliminar el registro de ${safeText(record.placa_texto)}?`);
+          if (confirmed) {
+            removeRecordByKey(recordKey);
+          }
+        }
+      };
+
+      const handleImageAction = (event) => {
+        const imageButton = event.target.closest('[data-image-src]');
+        if (!imageButton) {
+          return;
+        }
+
+        const src = imageButton.getAttribute('data-image-src');
+        const title = imageButton.getAttribute('data-image-title') || 'Imagen';
+        openImageModal(src, title);
+      };
+
+      desktopTableBody.addEventListener('click', handleRecordAction);
+      mobileCardsContainer.addEventListener('click', handleRecordAction);
+      desktopTableBody.addEventListener('click', handleImageAction);
+      mobileCardsContainer.addEventListener('click', handleImageAction);
+      detailsModalContent.addEventListener('click', handleImageAction);
 
       fechaActual.textContent = new Date().toLocaleDateString('es-NI', {
         weekday: 'long',
@@ -827,19 +994,13 @@
         }
       });
 
-      detailsModalContent.addEventListener('click', (event) => {
-        const imageButton = event.target.closest('[data-image-src]');
-        if (!imageButton) {
-          return;
-        }
-
-        const src = imageButton.getAttribute('data-image-src');
-        const title = imageButton.getAttribute('data-image-title') || 'Imagen';
-        openImageModal(src, title);
-      });
-
       searchInput.addEventListener('input', renderRecords);
       exportCsvButton.addEventListener('click', exportCsv);
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'JaguarRegistros' || event.key === 'JaguarSession') {
+          renderRecords();
+        }
+      });
 
       renderRecords();
     </script>

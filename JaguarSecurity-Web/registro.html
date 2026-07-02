@@ -107,13 +107,6 @@
           <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
         </a>
 
-        <a
-          href="#"
-          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
-        >
-          <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition shrink-0"></i>
-          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Generar Reporte .csv</span>
-        </a>
       </nav>
 
       <div
@@ -198,7 +191,7 @@
           <div class="glass-panel rounded-[1.75rem] border border-cyan-500/20 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-6">
             <div class="mb-5 rounded-[1.25rem] border border-white/5 bg-white/5 p-4">
               <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Centro de registro</p>
-              <h2 class="mt-2 text-xl font-bold text-white">Ingreso de vehículos</h2>
+              <h2 id="registroTitle" class="mt-2 text-xl font-bold text-white">Ingreso de vehículos</h2>
               <p class="mt-2 text-sm leading-6 text-gray-400">
                 Captura la información del vehículo, conductor y destino. Las fotos de placa y cédula se comprimen antes de almacenarse localmente.
               </p>
@@ -217,6 +210,15 @@
               </div>
 
               <div class="lg:col-span-2">
+                <label for="portonIngreso" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Portón de Ingreso</label>
+                <select id="portonIngreso" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
+                  <option>Entrada Principal</option>
+                  <option>Entrada Este</option>
+                  <option>Entrada Sur</option>
+                </select>
+              </div>
+
+              <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Placa</label>
                 <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
                   <input id="placaTexto" type="text" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Ej. M 123-456" />
@@ -226,7 +228,10 @@
                   </button>
                 </div>
                 <input id="placaFotoInput" type="file" accept="image/*" capture="environment" class="hidden" />
-                <div id="placaPreviewWrap" class="mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3">
+                <div id="placaPreviewWrap" class="relative mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3 pr-12">
+                  <button id="clearPlacaPhoto" type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-700 bg-gray-950/90 text-gray-300 transition hover:border-red-400/40 hover:text-red-300" aria-label="Eliminar foto de placa">
+                    <i class="ph ph-x text-base"></i>
+                  </button>
                   <img id="placaPreview" alt="Vista previa placa" class="h-16 w-16 rounded-lg border border-white/5 object-cover" />
                   <div>
                     <p class="text-sm font-semibold text-white">Foto de placa cargada</p>
@@ -243,14 +248,17 @@
               <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Cédula / Identificación <span class="text-gray-500 normal-case">(opcional)</span></label>
                 <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
-                  <input id="cedulaTexto" type="text" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Ej. 001-120999-0001A" />
+                  <input id="cedulaTexto" type="text" inputmode="text" maxlength="16" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Ej. 001-120999-0001A" />
                   <button id="btnCedulaFoto" type="button" class="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 active:scale-[0.99]">
                     <i class="ph ph-camera text-lg"></i>
                     Foto
                   </button>
                 </div>
                 <input id="cedulaFotoInput" type="file" accept="image/*" capture="environment" class="hidden" />
-                <div id="cedulaPreviewWrap" class="mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3">
+                <div id="cedulaPreviewWrap" class="relative mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3 pr-12">
+                  <button id="clearCedulaPhoto" type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-700 bg-gray-950/90 text-gray-300 transition hover:border-red-400/40 hover:text-red-300" aria-label="Eliminar foto de identificación">
+                    <i class="ph ph-x text-base"></i>
+                  </button>
                   <img id="cedulaPreview" alt="Vista previa cédula" class="h-16 w-16 rounded-lg border border-white/5 object-cover" />
                   <div>
                     <p class="text-sm font-semibold text-white">Foto de identificación cargada</p>
@@ -336,6 +344,7 @@
     <script>
       const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
       const registroForm = document.getElementById('registroForm');
+      const registroTitle = document.getElementById('registroTitle');
       const fechaActual = document.getElementById('fechaActual');
       const toast = document.getElementById('toast');
       const toastTitle = document.getElementById('toastTitle');
@@ -345,6 +354,9 @@
       const userNameDisplay = document.getElementById('userNameDisplay');
       const userInitialsDisplay = document.getElementById('userInitialsDisplay');
       const userRoleDisplay = document.getElementById('userRoleDisplay');
+      const portonIngreso = document.getElementById('portonIngreso');
+      const clearPlacaPhoto = document.getElementById('clearPlacaPhoto');
+      const clearCedulaPhoto = document.getElementById('clearCedulaPhoto');
 
       const sidebar = document.getElementById('modulesSidebar');
       const sidebarHeader = document.getElementById('sidebarHeader');
@@ -380,10 +392,126 @@
       const tipoVehiculo = document.getElementById('tipoVehiculo');
       const destino = document.getElementById('destino');
       const detalles = document.getElementById('detalles');
+      const submitButton = registroForm.querySelector('button[type="submit"]');
 
       let placaFotoBase64 = '';
       let cedulaFotoBase64 = '';
       let toastTimer = null;
+      const portonStorageKey = 'JaguarPortonActivo';
+      const params = new URLSearchParams(window.location.search);
+      const editIndexParam = params.get('editIndex');
+      const editIndex = editIndexParam !== null && editIndexParam !== '' ? Number(editIndexParam) : null;
+      let editMode = Number.isInteger(editIndex) && editIndex >= 0;
+      let editSourceRecord = null;
+      let editSourceIndex = editMode ? editIndex : null;
+
+      const getPortonGuardado = () => {
+        const valor = localStorage.getItem(portonStorageKey);
+        return valor || 'Entrada Principal';
+      };
+
+      const syncPortonSeleccionado = () => {
+        if (!portonIngreso) {
+          return;
+        }
+
+        portonIngreso.value = getPortonGuardado();
+      };
+
+      const guardarPortonSeleccionado = () => {
+        if (!portonIngreso) {
+          return;
+        }
+
+        localStorage.setItem(portonStorageKey, portonIngreso.value);
+      };
+
+      const formatCedulaNicaragua = (value) => {
+        const raw = String(value || '').toUpperCase();
+        const digits = raw.replace(/\D/g, '').slice(0, 13);
+        const letters = raw.replace(/[^A-Z]/g, '');
+        const letter = letters.slice(0, 1);
+
+        const first = digits.slice(0, 3);
+        const second = digits.slice(3, 9);
+        const third = digits.slice(9, 13);
+
+        let formatted = first;
+        if (digits.length > 3) {
+          formatted += `-${second}`;
+        }
+        if (digits.length > 9) {
+          formatted += `-${third}`;
+        }
+        if (letter) {
+          formatted += letter;
+        }
+
+        return formatted.slice(0, 16);
+      };
+
+      const updateCedulaInput = () => {
+        const formatted = formatCedulaNicaragua(cedulaTexto.value);
+        cedulaTexto.value = formatted;
+      };
+
+      const removePlacaPhoto = () => {
+        placaFotoBase64 = '';
+        placaFotoInput.value = '';
+        setPreview(placaPreview, placaPreviewWrap, '');
+      };
+
+      const removeCedulaPhoto = () => {
+        cedulaFotoBase64 = '';
+        cedulaFotoInput.value = '';
+        setPreview(cedulaPreview, cedulaPreviewWrap, '');
+      };
+
+      syncPortonSeleccionado();
+
+      const cargarModoEdicion = () => {
+        if (!editMode) {
+          return;
+        }
+
+        const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+        if (!Number.isInteger(editSourceIndex) || editSourceIndex < 0 || editSourceIndex >= registrosGuardados.length) {
+          editMode = false;
+          return;
+        }
+
+        editSourceRecord = registrosGuardados[editSourceIndex];
+        if (!editSourceRecord) {
+          editMode = false;
+          return;
+        }
+
+        registroTitle.textContent = 'Modificar Registro';
+        submitButton.innerHTML = '<i class="ph ph-check-circle text-xl"></i> Actualizar Datos';
+
+        tipoVehiculo.value = editSourceRecord.tipo || editSourceRecord.tipo_vehiculo || tipoVehiculo.value;
+        if (portonIngreso && (editSourceRecord.porton || editSourceRecord.porton_ingreso)) {
+          portonIngreso.value = editSourceRecord.porton || editSourceRecord.porton_ingreso;
+          localStorage.setItem(portonStorageKey, portonIngreso.value);
+        }
+
+        placaTexto.value = editSourceRecord.placa || editSourceRecord.placa_texto || '';
+        conductorNombre.value = editSourceRecord.conductor || editSourceRecord.nombre || '';
+        cedulaTexto.value = editSourceRecord.cedula || editSourceRecord.cedula_texto || '';
+        updateCedulaInput();
+        destino.value = editSourceRecord.destino || destino.value;
+        detalles.value = editSourceRecord.detalles || '';
+
+        if (editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64) {
+          placaFotoBase64 = editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64;
+          setPreview(placaPreview, placaPreviewWrap, placaFotoBase64);
+        }
+
+        if (editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64) {
+          cedulaFotoBase64 = editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64;
+          setPreview(cedulaPreview, cedulaPreviewWrap, cedulaFotoBase64);
+        }
+      };
 
       const nombreCompleto = sessionData?.nombre && sessionData?.apellido
         ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
@@ -404,6 +532,23 @@
       if (userRoleDisplay && sessionData?.usuarioRed) {
         userRoleDisplay.textContent = `Usuario: ${sessionData.usuarioRed}`;
       }
+
+      if (portonIngreso) {
+        portonIngreso.addEventListener('change', guardarPortonSeleccionado);
+      }
+
+      cedulaTexto.addEventListener('input', updateCedulaInput);
+      cedulaTexto.addEventListener('blur', updateCedulaInput);
+
+      if (clearPlacaPhoto) {
+        clearPlacaPhoto.addEventListener('click', removePlacaPhoto);
+      }
+
+      if (clearCedulaPhoto) {
+        clearCedulaPhoto.addEventListener('click', removeCedulaPhoto);
+      }
+
+      cargarModoEdicion();
 
       fechaActual.textContent = new Date().toLocaleDateString('es-NI', {
         weekday: 'long',
@@ -530,12 +675,14 @@
 
       const resetFormState = () => {
         registroForm.reset();
+        syncPortonSeleccionado();
         placaFotoBase64 = '';
         cedulaFotoBase64 = '';
         placaFotoInput.value = '';
         cedulaFotoInput.value = '';
         setPreview(placaPreview, placaPreviewWrap, '');
         setPreview(cedulaPreview, cedulaPreviewWrap, '');
+        cedulaTexto.value = '';
       };
 
       const setSidebarState = (collapsed) => {
@@ -684,25 +831,41 @@
       registroForm.addEventListener('submit', (event) => {
         event.preventDefault();
 
+        updateCedulaInput();
+
         if (!conductorNombre.value.trim()) {
           showToast('Falta información', 'El nombre del conductor o estudiante es obligatorio.', 'error');
           conductorNombre.focus();
           return;
         }
 
-        const nuevoRegistro = {
-          fecha_hora: new Date().toISOString(),
-          tipo_vehiculo: tipoVehiculo.value.trim(),
-          placa_texto: placaTexto.value.trim(),
-          placa_foto_base64: placaFotoBase64,
-          nombre: conductorNombre.value.trim(),
-          cedula_texto: cedulaTexto.value.trim(),
-          cedula_foto_base64: cedulaFotoBase64,
-          destino: destino.value.trim(),
-          detalles: detalles.value.trim()
-        };
+        const nombreOperador = sessionData?.nombre && sessionData?.apellido
+          ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
+          : 'Operador Desconocido';
 
         const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+        const nuevoRegistro = {
+          fecha: new Date().toISOString(),
+          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+          tipo: tipoVehiculo.value.trim(),
+          placa: placaTexto.value.trim(),
+          conductor: conductorNombre.value.trim(),
+          cedula: cedulaTexto.value.trim(),
+          destino: destino.value.trim(),
+          detalles: detalles.value.trim(),
+          operador_turno: nombreOperador,
+          fotoPlaca: placaFotoBase64,
+          fotoCedula: cedulaFotoBase64
+        };
+
+        if (editMode && Number.isInteger(editSourceIndex) && editSourceIndex >= 0 && editSourceIndex < registrosGuardados.length) {
+          nuevoRegistro.fecha = editSourceRecord?.fecha || editSourceRecord?.fecha_hora || registrosGuardados[editSourceIndex].fecha || registrosGuardados[editSourceIndex].fecha_hora;
+          registrosGuardados[editSourceIndex] = nuevoRegistro;
+          localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
+          window.location.href = 'bitacora.html';
+          return;
+        }
+
         registrosGuardados.push(nuevoRegistro);
         localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
 
