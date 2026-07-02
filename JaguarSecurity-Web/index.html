@@ -50,14 +50,6 @@
         </a>
 
         <a
-          href="registro.html"
-          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
-        >
-          <i class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition shrink-0"></i>
-          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Registrar Vehículo</span>
-        </a>
-
-        <a
           href="#"
           class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
         >
@@ -66,11 +58,43 @@
         </a>
 
         <a
+          href="registro.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Registrar Vehículos</span>
+        </a>
+
+        <a
           href="#"
           class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
         >
           <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition shrink-0"></i>
           <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Bitácora de registros</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-magnifying-glass text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Buscar Antecedentes</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-shield-check text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
+        </a>
+
+        <a
+          href="#"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Generar Reporte .csv</span>
         </a>
       </nav>
 
@@ -98,7 +122,7 @@
             >
               José Baca
             </p>
-            <p class="text-xs text-gray-400 truncate">Operador en turno</p>
+            <p id="userRoleDisplay" class="text-xs text-gray-400 truncate">Operador en turno</p>
           </div>
           <button
             id="logoutButton"
@@ -216,6 +240,7 @@
       const currentDateElement = document.getElementById("currentDate");
       const userNameElement = document.getElementById("userNameDisplay");
       const userInitialsElement = document.getElementById("userInitialsDisplay");
+      const userRoleElement = document.getElementById("userRoleDisplay");
       const welcomeTitleElement = document.getElementById("welcomeTitle");
       
       const sidebar = document.getElementById("modulesSidebar");
@@ -251,6 +276,9 @@
 
         userNameElement.textContent = nombreCompleto;
         userInitialsElement.textContent = iniciales;
+        if (userRoleElement && sessionData.usuarioRed) {
+          userRoleElement.textContent = `Usuario: ${sessionData.usuarioRed}`;
+        }
         welcomeTitleElement.textContent = `¡HOLA, ${nombreCompletoMayusculas}!`;
       }
 
