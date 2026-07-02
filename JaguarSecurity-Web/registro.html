@@ -458,13 +458,13 @@
       const removePlacaPhoto = () => {
         placaFotoBase64 = '';
         placaFotoInput.value = '';
-        setPreview(placaPreview, placaPreviewWrap, '');
+        setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, '');
       };
 
       const removeCedulaPhoto = () => {
         cedulaFotoBase64 = '';
         cedulaFotoInput.value = '';
-        setPreview(cedulaPreview, cedulaPreviewWrap, '');
+        setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, '');
       };
 
       syncPortonSeleccionado();
@@ -502,14 +502,16 @@
         destino.value = editSourceRecord.destino || destino.value;
         detalles.value = editSourceRecord.detalles || '';
 
-        if (editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64) {
-          placaFotoBase64 = editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64;
-          setPreview(placaPreview, placaPreviewWrap, placaFotoBase64);
+        const placaFotoSource = editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64;
+        if (placaFotoSource) {
+          placaFotoBase64 = placaFotoSource;
+          setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, placaFotoBase64);
         }
 
-        if (editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64) {
-          cedulaFotoBase64 = editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64;
-          setPreview(cedulaPreview, cedulaPreviewWrap, cedulaFotoBase64);
+        const cedulaFotoSource = editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64;
+        if (cedulaFotoSource) {
+          cedulaFotoBase64 = cedulaFotoSource;
+          setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, cedulaFotoBase64);
         }
       };
 
@@ -626,15 +628,21 @@
         image.src = objectUrl;
       });
 
-      const setPreview = (imgElement, wrapElement, base64) => {
+      const setPreview = (imgElement, wrapElement, fileButton, base64) => {
         if (base64) {
           imgElement.src = base64;
           wrapElement.classList.remove('hidden');
           wrapElement.classList.add('flex');
+          if (fileButton) {
+            fileButton.classList.add('hidden');
+          }
         } else {
           imgElement.removeAttribute('src');
           wrapElement.classList.add('hidden');
           wrapElement.classList.remove('flex');
+          if (fileButton) {
+            fileButton.classList.remove('hidden');
+          }
         }
       };
 
@@ -649,7 +657,7 @@
 
         try {
           placaFotoBase64 = await compressImage(file);
-          setPreview(placaPreview, placaPreviewWrap, placaFotoBase64);
+          setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, placaFotoBase64);
           showToast('Foto de placa lista', 'La imagen fue comprimida y preparada para guardar.');
         } catch (error) {
           console.error(error);
@@ -665,7 +673,7 @@
 
         try {
           cedulaFotoBase64 = await compressImage(file);
-          setPreview(cedulaPreview, cedulaPreviewWrap, cedulaFotoBase64);
+          setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, cedulaFotoBase64);
           showToast('Foto de identificación lista', 'La imagen fue comprimida y preparada para guardar.');
         } catch (error) {
           console.error(error);
@@ -680,8 +688,8 @@
         cedulaFotoBase64 = '';
         placaFotoInput.value = '';
         cedulaFotoInput.value = '';
-        setPreview(placaPreview, placaPreviewWrap, '');
-        setPreview(cedulaPreview, cedulaPreviewWrap, '');
+        setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, '');
+        setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, '');
         cedulaTexto.value = '';
       };
 
@@ -844,33 +852,61 @@
           : 'Operador Desconocido';
 
         const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
-        const nuevoRegistro = {
-          fecha: new Date().toISOString(),
-          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+        const formValues = {
           tipo: tipoVehiculo.value.trim(),
+          tipo_vehiculo: tipoVehiculo.value.trim(),
+          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+          porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
           placa: placaTexto.value.trim(),
+          placa_texto: placaTexto.value.trim(),
           conductor: conductorNombre.value.trim(),
+          nombre: conductorNombre.value.trim(),
           cedula: cedulaTexto.value.trim(),
+          cedula_texto: cedulaTexto.value.trim(),
           destino: destino.value.trim(),
           detalles: detalles.value.trim(),
           operador_turno: nombreOperador,
           fotoPlaca: placaFotoBase64,
-          fotoCedula: cedulaFotoBase64
+          placa_foto_base64: placaFotoBase64,
+          fotoCedula: cedulaFotoBase64,
+          cedula_foto_base64: cedulaFotoBase64
         };
 
         if (editMode && Number.isInteger(editSourceIndex) && editSourceIndex >= 0 && editSourceIndex < registrosGuardados.length) {
-          nuevoRegistro.fecha = editSourceRecord?.fecha || editSourceRecord?.fecha_hora || registrosGuardados[editSourceIndex].fecha || registrosGuardados[editSourceIndex].fecha_hora;
+          const registroAntiguo = registrosGuardados[editSourceIndex] || null;
+          if (!registroAntiguo) {
+            showToast('Error de edición', 'No se encontró el registro a actualizar.', 'error');
+            return;
+          }
+
+          const nuevoRegistro = {
+            ...formValues
+          };
+
+          if ('fecha' in registroAntiguo) {
+            nuevoRegistro.fecha = registroAntiguo.fecha;
+          }
+
+          if ('fecha_hora' in registroAntiguo) {
+            nuevoRegistro.fecha_hora = registroAntiguo.fecha_hora;
+          }
+
           registrosGuardados[editSourceIndex] = nuevoRegistro;
           localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
+          showToast('Registro actualizado', 'Los cambios se guardaron correctamente.');
           window.location.href = 'bitacora.html';
           return;
         }
 
+        const nuevoRegistro = {
+          fecha: new Date().toISOString(),
+          ...formValues
+        };
+
         registrosGuardados.push(nuevoRegistro);
         localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
-
-        resetFormState();
         showToast('Vehículo Registrado Exitosamente', 'El ingreso fue almacenado en el sistema local.');
+        window.location.href = 'bitacora.html';
       });
 
       document.addEventListener('DOMContentLoaded', () => {

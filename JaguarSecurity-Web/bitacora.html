@@ -510,7 +510,7 @@
         const destino = getRecordValue(record, 'destino');
         const operador = getRecordValue(record, 'operador_turno');
         const detalles = getRecordValue(record, 'detalles');
-        const thumbnail = record.placa_foto_base64
+        const thumbnail = fotoPlaca
           ? `<button type="button" class="group mt-2 inline-flex items-center gap-2 rounded-xl border border-cyan-500/15 bg-gray-900/70 p-2 text-left transition hover:border-cyan-400/35 hover:bg-cyan-500/5" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
               <img src="${fotoPlaca}" alt="Foto de placa" class="h-11 w-11 rounded-lg border border-white/5 object-cover" />
               <span class="text-xs text-gray-400">Ver imagen</span>
@@ -569,7 +569,7 @@
         const destino = getRecordValue(record, 'destino');
         const operador = getRecordValue(record, 'operador_turno');
         const detalles = getRecordValue(record, 'detalles');
-        const placaThumbnail = record.placa_foto_base64
+        const placaThumbnail = fotoPlaca
           ? `<button type="button" class="overflow-hidden rounded-2xl border border-cyan-500/15 bg-gray-900" data-image-src="${fotoPlaca}" data-image-title="Foto de placa">
               <img src="${fotoPlaca}" alt="Foto de placa" class="h-44 w-full object-cover" />
             </button>`
@@ -685,7 +685,7 @@
           'Foto Placa',
           'Foto Cedula',
           'Guardia'
-        ];
+        ].map(limpiarTexto);
 
         let csvContent = 'sep=,\n';
         csvContent += `${header.join(',')}\n`;
@@ -779,7 +779,33 @@
         const action = actionButton.getAttribute('data-action');
         if (action === 'details') {
           openDetailsModal(record);
-          return;
+          return;        const formValues = {
+          tipo: tipoVehiculo.value.trim(),
+          tipo_vehiculo: tipoVehiculo.value.trim(),
+        
+          porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+          porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+        
+          placa: placaTexto.value.trim(),
+          placa_texto: placaTexto.value.trim(),
+        
+          conductor: conductorNombre.value.trim(),
+          nombre: conductorNombre.value.trim(),
+        
+          cedula: cedulaTexto.value.trim(),
+          cedula_texto: cedulaTexto.value.trim(),
+        
+          destino: destino.value.trim(),
+          detalles: detalles.value.trim(),
+        
+          operador_turno: nombreOperador,
+        
+          fotoPlaca: placaFotoBase64,
+          placa_foto_base64: placaFotoBase64,
+        
+          fotoCedula: cedulaFotoBase64,
+          cedula_foto_base64: cedulaFotoBase64
+        };
         }
 
         if (action === 'edit') {
