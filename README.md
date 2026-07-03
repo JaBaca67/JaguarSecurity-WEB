@@ -1,2 +1,2 @@
 # JaguarSecurity-WEB
-Versión WEB del proyecto JaguarSecurity para UAM.
+Versión WEB del proyecto JaguarSecurity para UAM. Finalizado.
