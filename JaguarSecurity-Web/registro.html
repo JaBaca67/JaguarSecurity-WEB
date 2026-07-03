@@ -193,12 +193,14 @@
               <div class="lg:col-span-2">
                 <label for="tipoVehiculo" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Tipo de Vehículo</label>
                 <select id="tipoVehiculo" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
-                  <option>Sedán</option>
+                  <option>Automóvil</option>
                   <option>Camioneta</option>
-                  <option>Moto</option>
-                  <option>Microbús</option>
+                  <option>Motocicleta</option>
+                  <option>Microbús / Bus</option>
+                  <option>Camión</option>
                   <option>Otro</option>
                 </select>
+                <input id="otroTipoInput" type="text" placeholder="Especifique el vehículo..." class="hidden mt-3 h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" />
               </div>
 
               <div class="lg:col-span-2">
@@ -259,17 +261,22 @@
                 </div>
               </div>
 
-              <div>
+              <div class="lg:col-span-2">
                 <label for="destino" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Destino</label>
                 <select id="destino" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
-                  <option>Recepción</option>
-                  <option>Administración</option>
-                  <option>Rectoría</option>
-                  <option>Parqueo</option>
-                  <option>Laboratorios</option>
+                  <option>Parqueo Principal</option>
+                  <option>Clínicas Odontológicas</option>
+                  <option>Clínica de Fisioterapia</option>
+                  <option>Facultad de Ingeniería y Arquitectura (FIA)</option>
+                  <option>Facultad de Ciencias Administrativas y Económicas</option>
+                  <option>Instalaciones Deportivas (Canchas y Gimnasio)</option>
+                  <option>Registro Académico y Servicios Estudiantiles</option>
+                  <option>Biblioteca Pablo Antonio Cuadra</option>
+                  <option>Edificio P</option>
+                  <option>FoodCourt</option>
                   <option>Otro</option>
-                  <option>N/A</option>
                 </select>
+                <input id="otroDestinoInput" type="text" placeholder="Especifique el destino..." class="hidden mt-3 h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" />
               </div>
 
               <div>
@@ -365,7 +372,9 @@
 
       const conductorNombre = document.getElementById('conductorNombre');
       const tipoVehiculo = document.getElementById('tipoVehiculo');
+      const otroTipoInput = document.getElementById('otroTipoInput');
       const destino = document.getElementById('destino');
+      const otroDestinoInput = document.getElementById('otroDestinoInput');
       const detalles = document.getElementById('detalles');
       const submitButton = registroForm.querySelector('button[type="submit"]');
 
@@ -474,7 +483,23 @@
         conductorNombre.value = editSourceRecord.conductor || editSourceRecord.nombre || '';
         cedulaTexto.value = editSourceRecord.cedula || editSourceRecord.cedula_texto || '';
         updateCedulaInput();
-        destino.value = editSourceRecord.destino || destino.value;
+        const registroDestino = editSourceRecord.destino || editSourceRecord.destino_final || destino.value;
+        if (destino && otroDestinoInput) {
+          const opcionesDestino = Array.from(destino.options).map((option) => option.value);
+          if (opcionesDestino.includes(registroDestino)) {
+            destino.value = registroDestino;
+            otroDestinoInput.classList.add('hidden');
+            otroDestinoInput.required = false;
+            otroDestinoInput.value = '';
+          } else {
+            destino.value = 'Otro';
+            otroDestinoInput.classList.remove('hidden');
+            otroDestinoInput.required = true;
+            otroDestinoInput.value = registroDestino;
+          }
+        } else if (destino) {
+          destino.value = registroDestino;
+        }
         detalles.value = editSourceRecord.detalles || '';
 
         const placaFotoSource = editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64;
@@ -512,6 +537,34 @@
 
       if (portonIngreso) {
         portonIngreso.addEventListener('change', guardarPortonSeleccionado);
+      }
+
+      if (tipoVehiculo && otroTipoInput) {
+        tipoVehiculo.addEventListener('change', () => {
+          if (tipoVehiculo.value === 'Otro') {
+            otroTipoInput.classList.remove('hidden');
+            otroTipoInput.required = true;
+            otroTipoInput.focus();
+          } else {
+            otroTipoInput.classList.add('hidden');
+            otroTipoInput.required = false;
+            otroTipoInput.value = '';
+          }
+        });
+      }
+
+      if (destino && otroDestinoInput) {
+        destino.addEventListener('change', () => {
+          if (destino.value === 'Otro') {
+            otroDestinoInput.classList.remove('hidden');
+            otroDestinoInput.required = true;
+            otroDestinoInput.focus();
+          } else {
+            otroDestinoInput.classList.add('hidden');
+            otroDestinoInput.required = false;
+            otroDestinoInput.value = '';
+          }
+        });
       }
 
       cedulaTexto.addEventListener('input', updateCedulaInput);
@@ -822,14 +875,39 @@
           return;
         }
 
+        let tipoVehiculoFinal = tipoVehiculo.value.trim();
+        if (tipoVehiculoFinal === 'Otro') {
+          tipoVehiculoFinal = otroTipoInput ? otroTipoInput.value.trim() : '';
+          if (!tipoVehiculoFinal) {
+            showToast('Falta información', 'Especifique el tipo de vehículo.', 'error');
+            if (otroTipoInput) {
+              otroTipoInput.focus();
+            }
+            return;
+          }
+        }
+
         const nombreOperador = sessionData?.nombre && sessionData?.apellido
           ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
           : 'Operador Desconocido';
 
+        let destinoFinal = destino.value.trim();
+        if (destinoFinal === 'Otro') {
+          destinoFinal = otroDestinoInput ? otroDestinoInput.value.trim() : '';
+          if (!destinoFinal) {
+            showToast('Falta información', 'Especifique el destino.', 'error');
+            if (otroDestinoInput) {
+              otroDestinoInput.focus();
+            }
+            return;
+          }
+        }
+
         const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
         const formValues = {
-        tipo: tipoVehiculo.value.trim(),
-        tipo_vehiculo: tipoVehiculo.value.trim(),
+        tipo: tipoVehiculoFinal,
+        tipo_vehiculo: tipoVehiculoFinal,
+        destino: destinoFinal,
 
         porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
         porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
