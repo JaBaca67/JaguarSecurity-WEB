@@ -3,32 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JaguarSecurity | Inicio de turno</title>
+  <title>JaguarSecurity | Acceso Operativo</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center px-4">
-  <main class="w-full max-w-md glass-card p-8">
-    <p class="text-xs uppercase tracking-[0.35em] text-cyan-400">JaguarSecurity</p>
-    <h1 class="mt-3 text-3xl font-bold text-white">Inicio de turno</h1>
-    <p class="mt-2 text-sm text-gray-400">Acceso rápido para registrar el arranque de operaciones.</p>
+  <style>
+    /* Transición suave obligatoria para que el JS haga el efecto de fundido */
+    #bgVideo {
+      transition: opacity 0.4s ease-in-out;
+    }
 
-    <form class="mt-8 space-y-5">
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2" for="operador">Operador</label>
-        <input id="operador" type="text" class="form-input" placeholder="Nombre del operador" />
+    @media (max-width: 767px) {
+      #jaguarLogoMobile {
+        width: var(--mobile-logo-width, 92%);
+        max-width: var(--mobile-logo-max-width, 420px);
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body class="bg-black text-gray-100 min-h-screen flex items-start justify-center px-4 py-2 md:py-4 relative overflow-y-auto md:items-center">
+
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
+    <video 
+      id="bgVideo"
+      autoplay 
+      loop 
+      muted 
+      playsinline 
+      class="w-full h-full object-cover opacity-40">
+      <source src="assets/video/background_security.mp4" type="video/mp4">
+    </video>
+    <div class="absolute inset-0 bg-gray-950/60 backdrop-blur-[4px]"></div>
+  </div>
+  <div class="max-w-[1250px] w-full min-h-[220px] my-4 bg-gray-800 rounded-2xl shadow-[0_30px_90px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col md:flex-row border border-cyan-500/20 relative z-10 backdrop-blur-md">
+
+    <div class="flex-1 bg-gray-950/80 relative overflow-hidden group min-h-[220px] md:min-h-[470px]">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="w-[500px] h-[500px] bg-cyan-500 rounded-full blur-[140px] opacity-20 group-hover:opacity-30 transition duration-500"></div>
+        </div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6 md:p-8">
+            <img
+          id="jaguarLogoMobile"
+                src="assets/img/logo_jaguarsecurity.png"
+                alt="Logo JaguarSecurity"
+          class="w-full h-full object-contain scale-[0.95] md:scale-[0.8] select-none pointer-events-none drop-shadow-[0_0_35px_rgba(34,211,238,0.45)]"
+          style="--mobile-logo-width: 96%; --mobile-logo-max-width: 460px;">
+        </div>
+    </div>  
+
+    <div class="w-full md:w-[450px] lg:w-[500px] shrink-0 p-8 lg:p-10 bg-gray-800/95 flex flex-col justify-center border-t border-gray-700/50 md:border-t-0 md:border-l">
+      <div class="mb-5 rounded-2xl border border-cyan-300/20 bg-cyan-400/5 px-5 py-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
+        <h2 class="text-3xl font-bold text-cyan-100">Iniciar Turno</h2>
+        <p class="text-sm text-cyan-50/80 mt-1.5">Ingresa tus credenciales operativas.</p>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2" for="turno">Turno</label>
-        <select id="turno" class="form-input">
-          <option>Matutino</option>
-          <option>Vespertino</option>
-          <option selected>Nocturno</option>
-        </select>
-      </div>
-      <button type="submit" class="w-full rounded-xl bg-cyan-500 px-4 py-3 font-semibold text-gray-950 hover:bg-cyan-400 transition">Iniciar turno</button>
-      <a href="index.html" class="block text-center text-sm text-yellow-300 hover:text-yellow-200 transition">Volver al dashboard</a>
-    </form>
-  </main>
+
+      <form id="loginForm" class="space-y-4" novalidate>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1.5 tracking-wider" for="nombre">Nombre</label>
+            <input id="nombre" type="text" class="form-input w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 ease-out hover:bg-gray-800 hover:border-cyan-500/50 hover:shadow-[0_0_12px_rgba(34,211,238,0.15)] hover:-translate-y-0.5 focus:outline-none focus:border-cyan-400 focus:bg-gray-900 focus:ring-1 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.25)] focus:-translate-y-0.5" placeholder="Ej. José" autocomplete="given-name">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1.5 tracking-wider" for="apellido">Apellido</label>
+            <input id="apellido" type="text" class="form-input w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 ease-out hover:bg-gray-800 hover:border-cyan-500/50 hover:shadow-[0_0_12px_rgba(34,211,238,0.15)] hover:-translate-y-0.5 focus:outline-none focus:border-cyan-400 focus:bg-gray-900 focus:ring-1 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.25)] focus:-translate-y-0.5" placeholder="Ej. Baca" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1.5 tracking-wider" for="usuario">Usuario Red</label>
+          <input id="usuario" type="text" class="form-input w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 ease-out hover:bg-gray-800 hover:border-cyan-500/50 hover:shadow-[0_0_12px_rgba(34,211,238,0.15)] hover:-translate-y-0.5 focus:outline-none focus:border-cyan-400 focus:bg-gray-900 focus:ring-1 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.25)] focus:-translate-y-0.5" placeholder="Ej. jbaca" autocomplete="username">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1.5 tracking-wider" for="contrasena">Clave de Acceso</label>
+          <div class="relative group">
+            <input id="contrasena" type="password" class="form-input w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 ease-out hover:bg-gray-800 hover:border-cyan-500/50 hover:shadow-[0_0_12px_rgba(34,211,238,0.15)] hover:-translate-y-0.5 focus:outline-none focus:border-cyan-400 focus:bg-gray-900 focus:ring-1 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.25)] focus:-translate-y-0.5" placeholder="••••••••" autocomplete="current-password">
+            <button id="toggleContrasena" type="button" class="absolute inset-y-0 right-0 flex items-center justify-center px-3 text-gray-400 transition hover:text-cyan-300 group-hover:-translate-y-0.5" aria-label="Mostrar contraseña">
+              <svg id="iconoOjoAbierto" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="loginError" class="hidden min-h-[3.5rem] text-sm text-red-300 bg-red-900/20 border border-red-500/30 rounded-lg p-3 text-center flex items-center justify-center">
+          Mensaje de error aquí.
+        </div>
+
+        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 rounded-lg mt-4 transition-all duration-300 shadow-[0_10px_20px_rgba(8,145,178,0.3)] hover:shadow-[0_15px_25px_rgba(8,145,178,0.45)] hover:-translate-y-1">
+          Autenticar e Iniciar Turno
+        </button>
+        
+      </form>
+    </div>
+
+  </div>
+
+  <script src="assets/js/login.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bgVideo = document.getElementById('bgVideo');
+      if (bgVideo) {
+        bgVideo.addEventListener('timeupdate', () => {
+          // Si falta menos de 0.4 segundos para que acabe el video, lo oscurecemos
+          if (bgVideo.duration - bgVideo.currentTime < 0.4) {
+            bgVideo.style.opacity = '0';
+          } 
+          // En cuanto vuelva a iniciar, le regresamos la opacidad original (0.4)
+          else if (bgVideo.currentTime < 0.4) {
+            bgVideo.style.opacity = '0.4';
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

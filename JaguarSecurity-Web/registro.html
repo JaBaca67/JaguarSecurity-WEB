@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JaguarSecurity | Registro de Ingreso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+      #bgVideo {
+        transition: opacity 0.45s ease-in-out;
+      }
+
+      .glass-panel {
+        background: linear-gradient(180deg, rgba(3, 7, 18, 0.88), rgba(3, 7, 18, 0.72));
+        backdrop-filter: blur(18px);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 h-[100dvh] flex overflow-hidden">
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <video id="bgVideo" autoplay loop muted playsinline class="h-full w-full object-cover opacity-30">
+        <source src="assets/video/background_security.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gray-950/75 backdrop-blur-[3px]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_30%)]"></div>
+    </div>
+
+    <aside
+      id="modulesSidebar"
+      class="absolute inset-y-0 left-0 z-30 flex h-full w-0 -translate-x-full flex-col justify-between overflow-hidden border-r border-gray-800 bg-gray-950 transition-all duration-300 ease-in-out md:relative md:z-20"
+    >
+      <div
+        id="sidebarHeader"
+        class="h-20 flex items-center justify-between border-b border-gray-800 px-4 transition-all duration-300"
+      >
+        <img
+          id="sidebarLogo"
+          src="assets/img/logo_jaguarsecurity.png"
+          alt="JaguarSecurity"
+          class="h-20 w-auto object-contain scale-[1.35] translate-x-[20px] transition-all duration-300"
+        />
+        <button
+          id="sidebarToggle"
+          type="button"
+          class="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-cyan-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200 shrink-0"
+          aria-label="Colapsar módulos operativos"
+          aria-expanded="true"
+        >
+          <i id="sidebarToggleIcon" class="ph ph-caret-double-left text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <p
+          id="sidebarTitle"
+          class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 transition-all duration-300 whitespace-nowrap overflow-hidden"
+        >
+          Módulos Operativos
+        </p>
+
+        <a
+          href="index.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-squares-four text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Inicio</span>
+        </a>
+
+        <a
+          href="informacion.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-users text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Información de Operador</span>
+        </a>
+
+        <a
+          href="registro.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 transition group"
+        >
+          <i class="ph ph-car-profile text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Registrar Vehículos</span>
+        </a>
+
+        <a
+          href="bitacora.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Bitácora de registros</span>
+        </a>
+
+        <a
+          href="auditoria.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-archive text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
+        </a>
+
+      </nav>
+
+      <div
+        id="sidebarFooter"
+        class="p-4 border-t border-gray-800 transition-all duration-300"
+      >
+        <div
+          id="footerFlex"
+          class="flex items-center gap-3 p-3 bg-gray-900 rounded-xl border border-gray-700 transition-all duration-300 overflow-hidden"
+        >
+          <div
+            id="userInitialsDisplay"
+            class="h-10 w-10 shrink-0 rounded-full bg-cyan-900/50 flex items-center justify-center text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_18px_rgba(34,211,238,0.12)]"
+          >
+            --
+          </div>
+          <div
+            id="sidebarUserInfo"
+            class="flex-1 overflow-hidden transition-all duration-300"
+          >
+            <p
+              id="userNameDisplay"
+              class="text-sm font-semibold text-white truncate"
+            >
+              Operador
+            </p>
+            <p id="userRoleDisplay" class="text-xs text-gray-400 truncate">Operador en turno</p>
+          </div>
+          <button
+            id="logoutButton"
+            class="text-gray-400 hover:text-red-400 transition p-2 shrink-0"
+            title="Cerrar Turno"
+            type="button"
+          >
+            <i class="ph ph-sign-out text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-gray-950">
+      <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-30">
+          <source src="assets/video/background_security.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gray-950/60 backdrop-blur-[2px]"></div>
+      </div>
+
+      <header class="h-20 bg-gray-900/60 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 sm:px-8 shrink-0 relative z-10">
+        <div class="flex items-center gap-3">
+          <button
+            id="sidebarToggleExternal"
+            type="button"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200 md:hidden"
+            aria-label="Expandir módulos operativos"
+            aria-expanded="false"
+          >
+            <i class="ph ph-sidebar-simple text-xl"></i>
+          </button>
+
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Registro</h1>
+            <p class="text-sm text-gray-400">
+              Resumen operativo de hoy:
+              <span class="text-cyan-400" id="fechaActual"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
+            <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Sistema En Línea</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-5 pb-24 sm:p-8 relative z-10">
+        <div class="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+
+        <section class="relative z-10 mx-auto grid w-full max-w-7xl gap-5 lg:grid-cols-[1.1fr_0.9fr]">          <div class="glass-panel mx-auto w-full rounded-[1.75rem] border border-cyan-500/20 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-6 lg:ml-60">
+
+            <div class="mb-5 rounded-[1.25rem] border border-white/5 bg-white/5 p-4">
+              <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Centro de registro</p>
+              <h2 id="registroTitle" class="mt-2 text-xl font-bold text-white">Ingreso de vehículos</h2>
+              <p class="mt-2 text-sm leading-6 text-gray-400">
+                Captura la información del vehículo, conductor y destino. Las fotos de placa y cédula se comprimen antes de almacenarse localmente.
+              </p>
+            </div>
+
+            <form id="registroForm" class="grid gap-4 lg:grid-cols-2" novalidate>
+              <div class="lg:col-span-2">
+                <label for="tipoVehiculo" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Tipo de Vehículo</label>
+                <select id="tipoVehiculo" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
+                  <option>Sedán</option>
+                  <option>Camioneta</option>
+                  <option>Moto</option>
+                  <option>Microbús</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+
+              <div class="lg:col-span-2">
+                <label for="portonIngreso" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Portón de Ingreso</label>
+                <select id="portonIngreso" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
+                  <option>Entrada Principal</option>
+                  <option>Entrada Este</option>
+                  <option>Entrada Sur</option>
+                </select>
+              </div>
+
+              <div class="lg:col-span-2">
+                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Placa</label>
+                <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
+                  <input id="placaTexto" type="text" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Ej. M 123-456" />
+                  <button id="btnPlacaFoto" type="button" class="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 active:scale-[0.99]">
+                    <i class="ph ph-camera text-lg"></i>
+                    Foto
+                  </button>
+                </div>
+                <input id="placaFotoInput" type="file" accept="image/*" capture="environment" class="hidden" />
+                <div id="placaPreviewWrap" class="relative mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3 pr-12">
+                  <button id="clearPlacaPhoto" type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-700 bg-gray-950/90 text-gray-300 transition hover:border-red-400/40 hover:text-red-300" aria-label="Eliminar foto de placa">
+                    <i class="ph ph-x text-base"></i>
+                  </button>
+                  <img id="placaPreview" alt="Vista previa placa" class="h-16 w-16 rounded-lg border border-white/5 object-cover" />
+                  <div>
+                    <p class="text-sm font-semibold text-white">Foto de placa cargada</p>
+                    <p class="text-xs text-gray-400">Se comprimió automáticamente para almacenamiento local.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-2">
+                <label for="conductorNombre" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Nombre del Conductor / Estudiante</label>
+                <input id="conductorNombre" type="text" required class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Nombre completo" />
+              </div>
+
+              <div class="lg:col-span-2">
+                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Cédula / Identificación <span class="text-gray-500 normal-case">(opcional)</span></label>
+                <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
+                  <input id="cedulaTexto" type="text" inputmode="text" maxlength="16" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Ej. 001-120999-0001A" />
+                  <button id="btnCedulaFoto" type="button" class="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 active:scale-[0.99]">
+                    <i class="ph ph-camera text-lg"></i>
+                    Foto
+                  </button>
+                </div>
+                <input id="cedulaFotoInput" type="file" accept="image/*" capture="environment" class="hidden" />
+                <div id="cedulaPreviewWrap" class="relative mt-3 hidden items-center gap-3 rounded-xl border border-cyan-500/15 bg-gray-900/60 p-3 pr-12">
+                  <button id="clearCedulaPhoto" type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-700 bg-gray-950/90 text-gray-300 transition hover:border-red-400/40 hover:text-red-300" aria-label="Eliminar foto de identificación">
+                    <i class="ph ph-x text-base"></i>
+                  </button>
+                  <img id="cedulaPreview" alt="Vista previa cédula" class="h-16 w-16 rounded-lg border border-white/5 object-cover" />
+                  <div>
+                    <p class="text-sm font-semibold text-white">Foto de identificación cargada</p>
+                    <p class="text-xs text-gray-400">Se comprimió automáticamente para almacenamiento local.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label for="destino" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Destino</label>
+                <select id="destino" class="h-12 w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
+                  <option>Recepción</option>
+                  <option>Administración</option>
+                  <option>Rectoría</option>
+                  <option>Parqueo</option>
+                  <option>Laboratorios</option>
+                  <option>Otro</option>
+                  <option>N/A</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="detalles" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-400">Detalles / Observaciones</label>
+                <textarea id="detalles" rows="4" class="min-h-[112px] w-full rounded-xl border border-gray-700 bg-gray-900/90 px-4 py-3 text-base text-white outline-none transition placeholder:text-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20" placeholder="Notas adicionales del ingreso"></textarea>
+              </div>
+
+              <div class="lg:col-span-2">
+                <button type="submit" class="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-3.5 text-base font-bold text-gray-950 shadow-[0_16px_35px_rgba(34,211,238,0.2)] transition hover:brightness-110 active:scale-[0.99]">
+                  <i class="ph ph-check-circle text-xl"></i>
+                  Registrar Ingreso
+                </button>
+              </div>
+            </form>
+          </div>
+
+      </div>
+    </main>
+
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/80 px-4 backdrop-blur-sm" aria-hidden="true">
+      <div class="w-full max-w-md rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+        <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Confirmación requerida</p>
+        <h3 class="mt-3 text-2xl font-bold text-white">¿Desea cerrar la sesión?</h3>
+        <p class="mt-3 text-sm leading-6 text-gray-400">Si confirma, se cerrará el turno actual y regresará a la pantalla de inicio de sesión.</p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button id="cancelLogoutButton" type="button" class="flex-1 rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 font-semibold text-gray-200 transition hover:border-cyan-400/30 hover:bg-gray-800 hover:text-white">No, continuar</button>
+          <button id="confirmLogoutButton" type="button" class="flex-1 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-3 font-semibold text-gray-950 transition hover:brightness-110">Sí, cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="fixed right-4 top-4 z-50 hidden w-[calc(100%-2rem)] max-w-md rounded-2xl border border-cyan-400/20 bg-gray-950/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md">
+      <div class="flex items-start gap-3">
+        <div id="toastIcon" class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300">
+          <i class="ph ph-check-circle text-2xl"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p id="toastTitle" class="text-base font-bold text-white">Vehículo Registrado Exitosamente</p>
+          <p id="toastMessage" class="mt-1 text-sm leading-6 text-gray-400">El ingreso fue almacenado en el sistema local.</p>
+        </div>
+        <button id="toastClose" type="button" class="text-gray-500 transition hover:text-white" aria-label="Cerrar notificación">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
+      const registroForm = document.getElementById('registroForm');
+      const registroTitle = document.getElementById('registroTitle');
+      const fechaActual = document.getElementById('fechaActual');
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+      const toastClose = document.getElementById('toastClose');
+      const userNameDisplay = document.getElementById('userNameDisplay');
+      const userInitialsDisplay = document.getElementById('userInitialsDisplay');
+      const userRoleDisplay = document.getElementById('userRoleDisplay');
+      const portonIngreso = document.getElementById('portonIngreso');
+      const clearPlacaPhoto = document.getElementById('clearPlacaPhoto');
+      const clearCedulaPhoto = document.getElementById('clearCedulaPhoto');
+
+      const sidebar = document.getElementById('modulesSidebar');
+      const sidebarHeader = document.getElementById('sidebarHeader');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleExternal = document.getElementById('sidebarToggleExternal');
+      const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+      const sidebarTitle = document.getElementById('sidebarTitle');
+      const sidebarLabels = document.querySelectorAll('.sidebar-label');
+      const sidebarFooter = document.getElementById('sidebarFooter');
+      const footerFlex = document.getElementById('footerFlex');
+      const sidebarUserInfo = document.getElementById('sidebarUserInfo');
+      const sidebarLogo = document.getElementById('sidebarLogo');
+      const logoutButton = document.getElementById('logoutButton');
+      const logoutModal = document.getElementById('logoutModal');
+      const cancelLogoutButton = document.getElementById('cancelLogoutButton');
+      const confirmLogoutButton = document.getElementById('confirmLogoutButton');
+
+      const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+      const placaTexto = document.getElementById('placaTexto');
+      const placaFotoInput = document.getElementById('placaFotoInput');
+      const btnPlacaFoto = document.getElementById('btnPlacaFoto');
+      const placaPreviewWrap = document.getElementById('placaPreviewWrap');
+      const placaPreview = document.getElementById('placaPreview');
+
+      const cedulaTexto = document.getElementById('cedulaTexto');
+      const cedulaFotoInput = document.getElementById('cedulaFotoInput');
+      const btnCedulaFoto = document.getElementById('btnCedulaFoto');
+      const cedulaPreviewWrap = document.getElementById('cedulaPreviewWrap');
+      const cedulaPreview = document.getElementById('cedulaPreview');
+
+      const conductorNombre = document.getElementById('conductorNombre');
+      const tipoVehiculo = document.getElementById('tipoVehiculo');
+      const destino = document.getElementById('destino');
+      const detalles = document.getElementById('detalles');
+      const submitButton = registroForm.querySelector('button[type="submit"]');
+
+      let placaFotoBase64 = '';
+      let cedulaFotoBase64 = '';
+      let toastTimer = null;
+      const portonStorageKey = 'JaguarPortonActivo';
+      const params = new URLSearchParams(window.location.search);
+      const editIndexParam = params.get('editIndex');
+      const editIndex = editIndexParam !== null && editIndexParam !== '' ? Number(editIndexParam) : null;
+      let editMode = Number.isInteger(editIndex) && editIndex >= 0;
+      let editSourceRecord = null;
+      let editSourceIndex = editMode ? editIndex : null;
+
+      const getPortonGuardado = () => {
+        const valor = localStorage.getItem(portonStorageKey);
+        return valor || 'Entrada Principal';
+      };
+
+      const syncPortonSeleccionado = () => {
+        if (!portonIngreso) {
+          return;
+        }
+
+        portonIngreso.value = getPortonGuardado();
+      };
+
+      const guardarPortonSeleccionado = () => {
+        if (!portonIngreso) {
+          return;
+        }
+
+        localStorage.setItem(portonStorageKey, portonIngreso.value);
+      };
+
+      const formatCedulaNicaragua = (value) => {
+        const raw = String(value || '').toUpperCase();
+        const digits = raw.replace(/\D/g, '').slice(0, 13);
+        const letters = raw.replace(/[^A-Z]/g, '');
+        const letter = letters.slice(0, 1);
+
+        const first = digits.slice(0, 3);
+        const second = digits.slice(3, 9);
+        const third = digits.slice(9, 13);
+
+        let formatted = first;
+        if (digits.length > 3) {
+          formatted += `-${second}`;
+        }
+        if (digits.length > 9) {
+          formatted += `-${third}`;
+        }
+        if (letter) {
+          formatted += letter;
+        }
+
+        return formatted.slice(0, 16);
+      };
+
+      const updateCedulaInput = () => {
+        const formatted = formatCedulaNicaragua(cedulaTexto.value);
+        cedulaTexto.value = formatted;
+      };
+
+      const removePlacaPhoto = () => {
+        placaFotoBase64 = '';
+        placaFotoInput.value = '';
+        setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, '');
+      };
+
+      const removeCedulaPhoto = () => {
+        cedulaFotoBase64 = '';
+        cedulaFotoInput.value = '';
+        setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, '');
+      };
+
+      syncPortonSeleccionado();
+
+      const cargarModoEdicion = () => {
+        if (!editMode) {
+          return;
+        }
+
+        const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+        if (!Number.isInteger(editSourceIndex) || editSourceIndex < 0 || editSourceIndex >= registrosGuardados.length) {
+          editMode = false;
+          return;
+        }
+
+        editSourceRecord = registrosGuardados[editSourceIndex];
+        if (!editSourceRecord) {
+          editMode = false;
+          return;
+        }
+
+        registroTitle.textContent = 'Modificar Registro';
+        submitButton.innerHTML = '<i class="ph ph-check-circle text-xl"></i> Actualizar Datos';
+
+        tipoVehiculo.value = editSourceRecord.tipo || editSourceRecord.tipo_vehiculo || tipoVehiculo.value;
+        if (portonIngreso && (editSourceRecord.porton || editSourceRecord.porton_ingreso)) {
+          portonIngreso.value = editSourceRecord.porton || editSourceRecord.porton_ingreso;
+          localStorage.setItem(portonStorageKey, portonIngreso.value);
+        }
+
+        placaTexto.value = editSourceRecord.placa || editSourceRecord.placa_texto || '';
+        conductorNombre.value = editSourceRecord.conductor || editSourceRecord.nombre || '';
+        cedulaTexto.value = editSourceRecord.cedula || editSourceRecord.cedula_texto || '';
+        updateCedulaInput();
+        destino.value = editSourceRecord.destino || destino.value;
+        detalles.value = editSourceRecord.detalles || '';
+
+        const placaFotoSource = editSourceRecord.fotoPlaca || editSourceRecord.placa_foto_base64;
+        if (placaFotoSource) {
+          placaFotoBase64 = placaFotoSource;
+          setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, placaFotoBase64);
+        }
+
+        const cedulaFotoSource = editSourceRecord.fotoCedula || editSourceRecord.cedula_foto_base64;
+        if (cedulaFotoSource) {
+          cedulaFotoBase64 = cedulaFotoSource;
+          setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, cedulaFotoBase64);
+        }
+      };
+
+      const nombreCompleto = sessionData?.nombre && sessionData?.apellido
+        ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
+        : 'Operador';
+
+      const iniciales = sessionData?.nombre && sessionData?.apellido
+        ? `${sessionData.nombre.charAt(0)}${sessionData.apellido.charAt(0)}`.toUpperCase()
+        : '--';
+
+      if (userNameDisplay) {
+        userNameDisplay.textContent = nombreCompleto;
+      }
+
+      if (userInitialsDisplay) {
+        userInitialsDisplay.textContent = iniciales;
+      }
+
+      if (userRoleDisplay && sessionData?.usuarioRed) {
+        userRoleDisplay.textContent = `Usuario: ${sessionData.usuarioRed}`;
+      }
+
+      if (portonIngreso) {
+        portonIngreso.addEventListener('change', guardarPortonSeleccionado);
+      }
+
+      cedulaTexto.addEventListener('input', updateCedulaInput);
+      cedulaTexto.addEventListener('blur', updateCedulaInput);
+
+      if (clearPlacaPhoto) {
+        clearPlacaPhoto.addEventListener('click', removePlacaPhoto);
+      }
+
+      if (clearCedulaPhoto) {
+        clearCedulaPhoto.addEventListener('click', removeCedulaPhoto);
+      }
+
+      cargarModoEdicion();
+
+      fechaActual.textContent = new Date().toLocaleDateString('es-NI', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const showToast = (title, message, variant = 'success') => {
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        toastIcon.className = variant === 'success'
+          ? 'mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300'
+          : 'mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-300';
+
+        toast.classList.remove('hidden');
+        toast.classList.add('block');
+
+        if (toastTimer) {
+          window.clearTimeout(toastTimer);
+        }
+
+        toastTimer = window.setTimeout(() => {
+          toast.classList.add('hidden');
+          toast.classList.remove('block');
+        }, 3200);
+      };
+
+      toastClose.addEventListener('click', () => {
+        toast.classList.add('hidden');
+        toast.classList.remove('block');
+        if (toastTimer) {
+          window.clearTimeout(toastTimer);
+        }
+      });
+
+      const compressImage = (file) => new Promise((resolve, reject) => {
+        if (!file) {
+          reject(new Error('No se recibió una imagen.'));
+          return;
+        }
+
+        const image = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        image.onload = () => {
+          const maxWidth = 800;
+          const scale = Math.min(1, maxWidth / image.width);
+          const width = Math.round(image.width * scale);
+          const height = Math.round(image.height * scale);
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const context = canvas.getContext('2d');
+          if (!context) {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('No se pudo crear el canvas.'));
+            return;
+          }
+
+          context.drawImage(image, 0, 0, width, height);
+          const base64 = canvas.toDataURL('image/jpeg', 0.7);
+          URL.revokeObjectURL(objectUrl);
+          resolve(base64);
+        };
+
+        image.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('No se pudo leer la imagen.'));
+        };
+
+        image.src = objectUrl;
+      });
+
+      function setPreview(imgElement, wrapElement, fileButton, base64) {
+        if (base64) {
+          imgElement.src = base64;
+          wrapElement.classList.remove('hidden');
+          wrapElement.classList.add('flex');
+          if (fileButton) {
+            fileButton.classList.add('hidden');
+          }
+        } else {
+          imgElement.removeAttribute('src');
+          wrapElement.classList.add('hidden');
+          wrapElement.classList.remove('flex');
+          if (fileButton) {
+            fileButton.classList.remove('hidden');
+          }
+        }
+      }
+
+      btnPlacaFoto.addEventListener('click', () => placaFotoInput.click());
+      btnCedulaFoto.addEventListener('click', () => cedulaFotoInput.click());
+
+      placaFotoInput.addEventListener('change', async () => {
+        const [file] = placaFotoInput.files || [];
+        if (!file) {
+          return;
+        }
+
+        try {
+          placaFotoBase64 = await compressImage(file);
+          setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, placaFotoBase64);
+          showToast('Foto de placa lista', 'La imagen fue comprimida y preparada para guardar.');
+        } catch (error) {
+          console.error(error);
+          showToast('No se pudo procesar la placa', 'Intenta tomar la foto nuevamente.', 'error');
+        }
+      });
+
+      cedulaFotoInput.addEventListener('change', async () => {
+        const [file] = cedulaFotoInput.files || [];
+        if (!file) {
+          return;
+        }
+
+        try {
+          cedulaFotoBase64 = await compressImage(file);
+          setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, cedulaFotoBase64);
+          showToast('Foto de identificación lista', 'La imagen fue comprimida y preparada para guardar.');
+        } catch (error) {
+          console.error(error);
+          showToast('No se pudo procesar la identificación', 'Intenta tomar la foto nuevamente.', 'error');
+        }
+      });
+
+      const resetFormState = () => {
+        registroForm.reset();
+        syncPortonSeleccionado();
+        placaFotoBase64 = '';
+        cedulaFotoBase64 = '';
+        placaFotoInput.value = '';
+        cedulaFotoInput.value = '';
+        setPreview(placaPreview, placaPreviewWrap, btnPlacaFoto, '');
+        setPreview(cedulaPreview, cedulaPreviewWrap, btnCedulaFoto, '');
+        cedulaTexto.value = '';
+      };
+
+      const setSidebarState = (collapsed) => {
+        const mobile = isMobileViewport();
+
+        sidebar.classList.toggle('w-0', collapsed && mobile);
+        sidebar.classList.toggle('w-20', collapsed && !mobile);
+        sidebar.classList.toggle('w-72', !collapsed);
+        sidebar.classList.toggle('-translate-x-full', collapsed && mobile);
+        sidebar.classList.toggle('translate-x-0', !collapsed || !mobile);
+        sidebar.classList.toggle('pointer-events-none', collapsed && mobile);
+        sidebar.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+
+        sidebarLogo.classList.toggle('opacity-0', collapsed);
+        sidebarLogo.classList.toggle('hidden', collapsed);
+        sidebarLogo.classList.toggle('translate-x-[20px]', !collapsed);
+
+        sidebarHeader.classList.toggle('justify-between', !collapsed);
+        sidebarHeader.classList.toggle('justify-center', collapsed);
+        sidebarHeader.classList.toggle('px-4', !collapsed);
+        sidebarHeader.classList.toggle('px-0', collapsed);
+
+        sidebarTitle.classList.toggle('opacity-100', !collapsed);
+        sidebarTitle.classList.toggle('opacity-0', collapsed);
+        sidebarTitle.classList.toggle('max-h-10', !collapsed);
+        sidebarTitle.classList.toggle('max-h-0', collapsed);
+
+        sidebarLabels.forEach((label) => {
+          label.classList.toggle('opacity-100', !collapsed);
+          label.classList.toggle('opacity-0', collapsed);
+          label.classList.toggle('w-auto', !collapsed);
+          label.classList.toggle('w-0', collapsed);
+        });
+
+        sidebarUserInfo.classList.toggle('opacity-100', !collapsed);
+        sidebarUserInfo.classList.toggle('opacity-0', collapsed);
+        sidebarUserInfo.classList.toggle('max-w-full', !collapsed);
+        sidebarUserInfo.classList.toggle('max-w-0', collapsed);
+
+        sidebarFooter.classList.toggle('p-4', !collapsed);
+        sidebarFooter.classList.toggle('p-2', collapsed);
+
+        footerFlex.classList.toggle('justify-center', collapsed);
+        footerFlex.classList.toggle('px-1', collapsed);
+        footerFlex.classList.toggle('p-3', !collapsed);
+        footerFlex.classList.toggle('gap-3', !collapsed);
+        footerFlex.classList.toggle('gap-0', collapsed);
+
+        if (logoutButton) {
+          logoutButton.classList.toggle('hidden', collapsed);
+        }
+
+        sidebarToggle.classList.toggle('ml-2', !collapsed);
+        sidebarToggle.classList.toggle('ml-0', collapsed);
+        sidebarToggle.classList.toggle('opacity-100', !collapsed);
+        sidebarToggle.classList.toggle('opacity-0', collapsed && mobile);
+        sidebarToggle.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+        sidebarToggle.classList.toggle('pointer-events-none', collapsed && mobile);
+
+        sidebarToggleExternal.classList.toggle('hidden', !collapsed);
+        sidebarToggleExternal.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+
+        sidebarToggle.setAttribute(
+          'aria-label',
+          collapsed ? 'Expandir módulos operativos' : 'Colapsar módulos operativos'
+        );
+
+        sidebarToggleIcon.className = collapsed
+          ? 'ph ph-caret-double-right text-lg'
+          : 'ph ph-caret-double-left text-lg';
+      };
+
+      let sidebarCollapsed = isMobileViewport();
+      setSidebarState(sidebarCollapsed);
+
+      sidebarToggle.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      sidebarToggleExternal.addEventListener('click', () => {
+        sidebarCollapsed = false;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      window.addEventListener('resize', () => {
+        const mobile = isMobileViewport();
+        if (mobile && !sidebarCollapsed) {
+          sidebarCollapsed = true;
+          setSidebarState(sidebarCollapsed);
+        } else if (!mobile && sidebar.classList.contains('w-0')) {
+          sidebarCollapsed = false;
+          setSidebarState(sidebarCollapsed);
+        }
+      });
+
+      const openLogoutModal = () => {
+        if (!logoutModal) {
+          window.location.href = 'login.html';
+          return;
+        }
+        logoutModal.classList.remove('hidden');
+        logoutModal.classList.add('flex');
+        logoutModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeLogoutModal = () => {
+        if (!logoutModal) {
+          return;
+        }
+        logoutModal.classList.add('hidden');
+        logoutModal.classList.remove('flex');
+        logoutModal.setAttribute('aria-hidden', 'true');
+      };
+
+      if (logoutButton) {
+        logoutButton.addEventListener('click', openLogoutModal);
+      }
+
+      if (cancelLogoutButton) {
+        cancelLogoutButton.addEventListener('click', closeLogoutModal);
+      }
+
+      if (confirmLogoutButton) {
+        confirmLogoutButton.addEventListener('click', () => {
+          localStorage.removeItem('JaguarSession');
+          window.location.href = 'login.html';
+        });
+      }
+
+      if (logoutModal) {
+        logoutModal.addEventListener('click', (event) => {
+          if (event.target === logoutModal) {
+            closeLogoutModal();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+            closeLogoutModal();
+          }
+        });
+      }
+
+      registroForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        console.log('registro submit start', { editMode, editSourceIndex, editIndexParam });
+        updateCedulaInput();
+
+        if (!conductorNombre.value.trim()) {
+          showToast('Falta información', 'El nombre del conductor o estudiante es obligatorio.', 'error');
+          conductorNombre.focus();
+          return;
+        }
+
+        const nombreOperador = sessionData?.nombre && sessionData?.apellido
+          ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
+          : 'Operador Desconocido';
+
+        const registrosGuardados = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+        const formValues = {
+        tipo: tipoVehiculo.value.trim(),
+        tipo_vehiculo: tipoVehiculo.value.trim(),
+
+        porton: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+        porton_ingreso: portonIngreso ? portonIngreso.value : getPortonGuardado(),
+
+        placa: placaTexto.value.trim(),
+        placa_texto: placaTexto.value.trim(),
+
+        conductor: conductorNombre.value.trim(),
+        nombre: conductorNombre.value.trim(),
+
+        cedula: cedulaTexto.value.trim(),
+        cedula_texto: cedulaTexto.value.trim(),
+
+        destino: destino.value.trim(),
+        detalles: detalles.value.trim(),
+
+        operador_turno: nombreOperador,
+
+        fotoPlaca: placaFotoBase64,
+        placa_foto_base64: placaFotoBase64,
+
+        fotoCedula: cedulaFotoBase64,
+        cedula_foto_base64: cedulaFotoBase64
+      };
+
+       try {
+         console.log('registro: registrosGuardados length', registrosGuardados.length);
+          // 1. Forzamos la conversión del índice a número real
+          const index = parseInt(editSourceIndex, 10);
+
+          // 2. Evaluamos con el número convertido (!isNaN) en lugar de isInteger
+          if (editMode && !isNaN(index) && index >= 0 && index < registrosGuardados.length) {
+            const registroAntiguo = registrosGuardados[index] || null;
+            
+            if (!registroAntiguo) {
+              showToast('Error de edición', 'No se encontró el registro original.', 'error');
+              return;
+            }
+
+            const nuevoRegistro = {
+              ...formValues,
+              ...(registroAntiguo.fecha ? { fecha: registroAntiguo.fecha } : {}),
+              ...(registroAntiguo.fecha_hora ? { fecha_hora: registroAntiguo.fecha_hora } : {})
+            };
+            console.log('guardando edición idx', index, nuevoRegistro);
+            registrosGuardados[index] = nuevoRegistro;
+            localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
+            console.log('registro guardado en localStorage (edición)');
+
+            showToast('Registro actualizado', 'Los cambios se guardaron correctamente.');
+            setTimeout(() => {
+              window.location.href = 'bitacora.html';
+            }, 400);
+            return;
+          }
+
+          const nuevoRegistro = {
+            fecha: new Date().toISOString(),
+            ...formValues
+          };
+
+          console.log('guardando nuevo registro', nuevoRegistro);
+          registrosGuardados.push(nuevoRegistro);
+          localStorage.setItem('JaguarRegistros', JSON.stringify(registrosGuardados));
+          console.log('registro guardado en localStorage (nuevo)');
+
+          showToast('Vehículo Registrado Exitosamente', 'El ingreso fue almacenado en el sistema local.');
+          setTimeout(() => { window.location.href = 'bitacora.html'; }, 500);
+          
+        } catch (error) {
+          console.error("Error al guardar:", error);
+          if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+            showToast('Memoria Llena', 'No hay espacio local.', 'error');
+          } else {
+            showToast('Error del sistema', 'Hubo un problema al intentar guardar los datos.', 'error');
+          }
+        }
+      }); 
+          
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const bgVideo = document.getElementById('bgVideo');
+        if (bgVideo) {
+          bgVideo.addEventListener('timeupdate', () => {
+            if (bgVideo.duration - bgVideo.currentTime < 0.4) {
+              bgVideo.style.opacity = '0';
+            } else if (bgVideo.currentTime < 0.4) {
+              bgVideo.style.opacity = '0.3';
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JaguarSecurity | Información del Operador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+      #bgVideo {
+        transition: opacity 0.45s ease-in-out;
+      }
+
+      .glass-panel {
+        background: linear-gradient(180deg, rgba(3, 7, 18, 0.88), rgba(3, 7, 18, 0.72));
+        backdrop-filter: blur(18px);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 h-[100dvh] flex overflow-hidden">
+    <aside
+      id="modulesSidebar"
+      class="absolute inset-y-0 left-0 z-30 flex h-full w-0 -translate-x-full flex-col justify-between overflow-hidden border-r border-gray-800 bg-gray-950 transition-all duration-300 ease-in-out md:relative md:z-20"
+    >
+      <div
+        id="sidebarHeader"
+        class="h-20 flex items-center justify-between border-b border-gray-800 px-4 transition-all duration-300"
+      >
+        <img
+          id="sidebarLogo"
+          src="assets/img/logo_jaguarsecurity.png"
+          alt="JaguarSecurity"
+          class="h-20 w-auto object-contain scale-[1.35] translate-x-[20px] transition-all duration-300"
+        />
+        <button
+          id="sidebarToggle"
+          type="button"
+          class="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-700 bg-gray-900 text-cyan-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200 shrink-0"
+          aria-label="Colapsar módulos operativos"
+          aria-expanded="true"
+        >
+          <i id="sidebarToggleIcon" class="ph ph-caret-double-left text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <p
+          id="sidebarTitle"
+          class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 transition-all duration-300 whitespace-nowrap overflow-hidden"
+        >
+          Módulos Operativos
+        </p>
+
+        <a
+          href="index.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-squares-four text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Inicio</span>
+        </a>
+
+        <a
+          href="informacion.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 transition group"
+        >
+          <i class="ph ph-users text-xl shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Información de Operador</span>
+        </a>
+
+        <a
+          href="registro.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-car-profile text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Registrar Vehículos</span>
+        </a>
+
+        <a
+          href="bitacora.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-file-text text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Bitácora de registros</span>
+        </a>
+
+        <a
+          href="auditoria.html"
+          class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
+        >
+          <i class="ph ph-archive text-xl group-hover:text-cyan-400 transition shrink-0"></i>
+          <span class="sidebar-label font-medium whitespace-nowrap overflow-hidden transition-all duration-300">Auditoría</span>
+        </a>
+
+      </nav>
+
+      <div
+        id="sidebarFooter"
+        class="p-4 border-t border-gray-800 transition-all duration-300"
+      >
+        <div
+          id="footerFlex"
+          class="flex items-center gap-3 p-3 bg-gray-900 rounded-xl border border-gray-700 transition-all duration-300 overflow-hidden"
+        >
+          <div
+            id="userInitialsDisplay"
+            class="h-10 w-10 shrink-0 rounded-full bg-cyan-900/50 flex items-center justify-center text-cyan-300 font-bold border border-cyan-500/30 shadow-[0_0_18px_rgba(34,211,238,0.12)]"
+          >
+            --
+          </div>
+          <div
+            id="sidebarUserInfo"
+            class="flex-1 overflow-hidden transition-all duration-300"
+          >
+            <p
+              id="userNameDisplay"
+              class="text-sm font-semibold text-white truncate"
+            >
+              Operador
+            </p>
+            <p id="userRoleDisplay" class="text-xs text-gray-400 truncate">Operador en turno</p>
+          </div>
+          <button
+            id="logoutButton"
+            class="text-gray-400 hover:text-red-400 transition p-2 shrink-0"
+            title="Cerrar Turno"
+            type="button"
+          >
+            <i class="ph ph-sign-out text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <video id="bgVideo" autoplay loop muted playsinline class="h-full w-full object-cover opacity-30">
+        <source src="assets/video/background_security.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gray-950/75 backdrop-blur-[3px]"></div>
+    </div>
+
+    <main class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative z-10">
+      <header class="h-20 bg-gray-900/60 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 sm:px-8 shrink-0 relative z-10">
+        <div class="flex items-center gap-3">
+          <button
+            id="sidebarToggleExternal"
+            type="button"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 transition hover:bg-cyan-400/20 hover:text-cyan-200 md:hidden"
+            aria-label="Expandir módulos operativos"
+            aria-expanded="false"
+          >
+            <i class="ph ph-sidebar-simple text-xl"></i>
+          </button>
+
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Información del Operador</h1>
+            <p class="text-sm text-gray-400">Panel de información y configuración del operador</p>
+          </div>
+        </div>
+
+        <div class="hidden md:flex items-center gap-4">
+          <div class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
+            <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Sistema En Línea</span>
+          </div>
+        </div>
+      </header>
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="mx-auto w-full max-w-6xl">
+          <h1 class="text-3xl font-bold text-white mb-6">Panel de Información del Operador</h1>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Columna Izquierda -->
+          <div class="space-y-6">
+            <!-- Tarjeta de Identidad -->
+            <section id="profileCard" class="glass-panel rounded-[1.25rem] border border-gray-800 p-6 relative">
+              <button id="editProfileBtn" class="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-gray-900/60 px-3 py-2 text-sm text-cyan-200 hover:bg-cyan-500/10">
+                <i class="ph ph-pencil"></i>
+                <span id="editProfileBtnText">Editar</span>
+              </button>
+
+              <div class="flex items-center gap-4">
+                <div class="h-24 w-24 flex items-center justify-center rounded-full bg-cyan-900/30 border border-cyan-500/20 text-cyan-200 text-3xl font-bold shadow-[0_10px_30px_rgba(34,211,238,0.08)]" id="userInitials">--</div>
+                <div>
+                  <p class="text-sm text-gray-400">Nombre Completo</p>
+                  <p id="displayFullName" class="mt-1 text-xl font-semibold text-white">Operador --</p>
+
+                  <p class="text-sm text-gray-400 mt-3">Usuario de Red</p>
+                  <p id="displayUsuario" class="mt-1 text-sm font-medium text-white">usuario.red</p>
+
+                  <p class="text-sm text-gray-400 mt-3">Rol</p>
+                  <p id="displayRol" class="mt-1 text-sm font-medium text-white">Operador</p>
+                </div>
+              </div>
+
+              <form id="profileEditForm" class="mt-6 hidden space-y-3">
+                <div>
+                  <label class="text-xs text-gray-400">Nombre Completo</label>
+                  <input id="inputFullName" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400">Usuario de Red</label>
+                  <input id="inputUsuario" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400">Rol</label>
+                  <input id="inputRol" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+              </form>
+            </section>
+
+            <!-- Tarjeta de Cambio de Contraseña -->
+            <section class="glass-panel rounded-[1.25rem] border border-gray-800 p-6">
+              <h3 class="text-lg font-semibold text-white">Cambio de Contraseña</h3>
+              <p class="text-sm text-gray-400">Actualiza tus credenciales de acceso</p>
+
+              <div class="mt-4 space-y-4">
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Contraseña Actual</label>
+                  <input id="currentPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="currentPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Nueva Contraseña</label>
+                  <input id="newPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="newPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Confirmar Nueva</label>
+                  <input id="confirmPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="confirmPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="pt-2">
+                  <button id="updateCredentialsBtn" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-2 font-semibold text-gray-950 hover:brightness-105">Actualizar Credenciales</button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Columna Derecha -->
+          <div class="space-y-6">
+            <section class="glass-panel rounded-[1.25rem] border border-gray-800 p-6">
+              <h3 class="text-xl font-semibold text-white">Resumen de Turno</h3>
+              <p class="text-sm text-gray-400">Estado y métricas rápidas</p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Total de Vehículos Registrados Hoy </p>
+                  <p id="vehiculosCount" class="mt-2 text-3xl font-bold text-cyan-400">0</p>
+                </div>
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Auditorías Generadas</p>
+                  <p id="auditoriasCount" class="mt-2 text-3xl font-bold text-white">0</p>
+                </div>
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Hora de Inicio de Turno</p>
+                  <p id="inicioTurno" class="mt-2 text-3xl font-bold text-white">--:--</p>
+                </div>
+              </div>
+             
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div id="toast" class="fixed bottom-6 right-6 hidden rounded-xl bg-cyan-500/95 text-gray-900 px-4 py-2 font-semibold shadow-lg">Guardado</div>
+    </main>
+
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/80 px-4 backdrop-blur-sm" aria-hidden="true">
+      <div class="w-full max-w-md rounded-[1.75rem] border border-cyan-400/20 bg-gray-950/95 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+        <p class="text-xs uppercase tracking-[0.35em] text-cyan-300">Confirmación requerida</p>
+        <h3 class="mt-3 text-2xl font-bold text-white">¿Desea cerrar la sesión?</h3>
+        <p class="mt-3 text-sm leading-6 text-gray-400">Si confirma, se cerrará el turno actual y regresará a la pantalla de inicio de sesión.</p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button id="cancelLogoutButton" type="button" class="flex-1 rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 font-semibold text-gray-200 transition hover:border-cyan-400/30 hover:bg-gray-800 hover:text-white">No, continuar</button>
+          <button id="confirmLogoutButton" type="button" class="flex-1 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-3 font-semibold text-gray-950 transition hover:brightness-110">Sí, cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Sidebar and logout modal control (mirrored from index)
+      const sidebar = document.getElementById('modulesSidebar');
+      const sidebarHeader = document.getElementById('sidebarHeader');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarToggleExternal = document.getElementById('sidebarToggleExternal');
+      const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+      const sidebarTitle = document.getElementById('sidebarTitle');
+      const sidebarLabels = document.querySelectorAll('.sidebar-label');
+      const sidebarFooter = document.getElementById('sidebarFooter');
+      const footerFlex = document.getElementById('footerFlex');
+      const sidebarUserInfo = document.getElementById('sidebarUserInfo');
+      const sidebarLogo = document.getElementById('sidebarLogo');
+      const logoutButton = document.getElementById('logoutButton');
+
+      const logoutModal = document.getElementById('logoutModal');
+      const cancelLogoutButton = document.getElementById('cancelLogoutButton');
+      const confirmLogoutButton = document.getElementById('confirmLogoutButton');
+
+      const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+      const setSidebarState = (collapsed) => {
+        const mobile = isMobileViewport();
+
+        sidebar.classList.toggle('w-0', collapsed && mobile);
+        sidebar.classList.toggle('w-20', collapsed && !mobile);
+        sidebar.classList.toggle('w-72', !collapsed);
+        sidebar.classList.toggle('-translate-x-full', collapsed && mobile);
+        sidebar.classList.toggle('translate-x-0', !collapsed || !mobile);
+        sidebar.classList.toggle('pointer-events-none', collapsed && mobile);
+        sidebar.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+
+        sidebarLogo.classList.toggle('opacity-0', collapsed);
+        sidebarLogo.classList.toggle('hidden', collapsed);
+        sidebarLogo.classList.toggle('translate-x-[20px]', !collapsed);
+
+        sidebarHeader.classList.toggle('justify-between', !collapsed);
+        sidebarHeader.classList.toggle('justify-center', collapsed);
+        sidebarHeader.classList.toggle('px-4', !collapsed);
+        sidebarHeader.classList.toggle('px-0', collapsed);
+
+        sidebarTitle.classList.toggle('opacity-100', !collapsed);
+        sidebarTitle.classList.toggle('opacity-0', collapsed);
+        sidebarTitle.classList.toggle('max-h-10', !collapsed);
+        sidebarTitle.classList.toggle('max-h-0', collapsed);
+
+        sidebarLabels.forEach((label) => {
+          label.classList.toggle('opacity-100', !collapsed);
+          label.classList.toggle('opacity-0', collapsed);
+          label.classList.toggle('w-auto', !collapsed);
+          label.classList.toggle('w-0', collapsed);
+        });
+
+        sidebarUserInfo.classList.toggle('opacity-100', !collapsed);
+        sidebarUserInfo.classList.toggle('opacity-0', collapsed);
+        sidebarUserInfo.classList.toggle('max-w-full', !collapsed);
+        sidebarUserInfo.classList.toggle('max-w-0', collapsed);
+
+        sidebarFooter.classList.toggle('p-4', !collapsed);
+        sidebarFooter.classList.toggle('p-2', collapsed);
+
+        footerFlex.classList.toggle('justify-center', collapsed);
+        footerFlex.classList.toggle('px-1', collapsed);
+        footerFlex.classList.toggle('p-3', !collapsed);
+        footerFlex.classList.toggle('gap-3', !collapsed);
+        footerFlex.classList.toggle('gap-0', collapsed);
+
+        logoutButton.classList.toggle('hidden', collapsed);
+
+        sidebarToggle.classList.toggle('ml-2', !collapsed);
+        sidebarToggle.classList.toggle('ml-0', collapsed);
+        sidebarToggle.classList.toggle('opacity-100', !collapsed);
+        sidebarToggle.classList.toggle('opacity-0', collapsed && mobile);
+        sidebarToggle.classList.toggle('pointer-events-auto', !collapsed || !mobile);
+        sidebarToggle.classList.toggle('pointer-events-none', collapsed && mobile);
+
+        sidebarToggleExternal.classList.toggle('hidden', !collapsed);
+        sidebarToggleExternal.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggle.setAttribute(
+          'aria-label',
+          collapsed ? 'Expandir módulos operativos' : 'Colapsar módulos operativos'
+        );
+        sidebarToggleIcon.className = collapsed
+          ? 'ph ph-caret-double-right text-lg'
+          : 'ph ph-caret-double-left text-lg';
+      };
+
+      let sidebarCollapsed = isMobileViewport();
+      setSidebarState(sidebarCollapsed);
+
+      sidebarToggle.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      sidebarToggleExternal.addEventListener('click', () => {
+        sidebarCollapsed = false;
+        setSidebarState(sidebarCollapsed);
+      });
+
+      window.addEventListener('resize', () => {
+        const mobile = isMobileViewport();
+        if (mobile && !sidebarCollapsed) {
+          sidebarCollapsed = true;
+          setSidebarState(sidebarCollapsed);
+        } else if (!mobile && sidebar.classList.contains('w-0')) {
+          sidebarCollapsed = false;
+          setSidebarState(sidebarCollapsed);
+        }
+      });
+
+      const openLogoutModal = () => {
+        logoutModal.classList.remove('hidden');
+        logoutModal.classList.add('flex');
+        logoutModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeLogoutModal = () => {
+        logoutModal.classList.add('hidden');
+        logoutModal.classList.remove('flex');
+        logoutModal.setAttribute('aria-hidden', 'true');
+      };
+
+      if (logoutButton) {
+        logoutButton.addEventListener('click', openLogoutModal);
+      }
+
+      if (cancelLogoutButton) {
+        cancelLogoutButton.addEventListener('click', closeLogoutModal);
+      }
+
+      if (confirmLogoutButton) {
+        confirmLogoutButton.addEventListener('click', () => {
+          localStorage.removeItem('JaguarSession');
+          window.location.href = 'login.html';
+        });
+      }
+
+      if (logoutModal) {
+        logoutModal.addEventListener('click', (event) => {
+          if (event.target === logoutModal) {
+            closeLogoutModal();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+            closeLogoutModal();
+          }
+        });
+      }
+
+      // Inicialización con valores guardados (si existen)
+      const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null') || {};
+
+      const sidebarUserName = document.getElementById('userNameDisplay');
+      const sidebarUserRole = document.getElementById('userRoleDisplay');
+      const sidebarInitialsDisplay = document.getElementById('userInitialsDisplay');
+
+      const displayFullName = document.getElementById('displayFullName');
+      const displayUsuario = document.getElementById('displayUsuario');
+      const displayRol = document.getElementById('displayRol');
+      const userInitials = document.getElementById('userInitials');
+
+      const profileEditForm = document.getElementById('profileEditForm');
+      const inputFullName = document.getElementById('inputFullName');
+      const inputUsuario = document.getElementById('inputUsuario');
+      const inputRol = document.getElementById('inputRol');
+      const editProfileBtn = document.getElementById('editProfileBtn');
+      const editProfileBtnText = document.getElementById('editProfileBtnText');
+
+      const toast = document.getElementById('toast');
+
+      // Setear valores iniciales
+      let fullName = sessionData.nombre ? `${sessionData.nombre} ${sessionData.apellido || ''}`.trim() : (sessionData.fullName || 'Operador --');
+      let usuarioRed = sessionData.usuarioRed || 'usuario.red';
+      let rol = sessionData.rol || 'Operador';
+      const loginTime = sessionData.loginTime || sessionData.horaInicio || sessionData.horaInicioSesion || '';
+
+      function initialsFromName(name) {
+        if (!name) return '--';
+        const parts = name.trim().split(/\s+/);
+        return (parts[0]?.charAt(0) || '-') + (parts[1]?.charAt(0) || '-');
+      }
+
+      function formatTime(value) {
+        if (!value) return 'No disponible';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'No disponible';
+        return date.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+      }
+
+      const localRegistros = JSON.parse(localStorage.getItem('JaguarRegistros') || '[]');
+      const registrosCount = Array.isArray(localRegistros) ? localRegistros.length : 0;
+      const auditoriasCount = parseInt(localStorage.getItem('JaguarAuditoriasCount') || '0', 10) || 0;
+
+      displayFullName.textContent = fullName;
+      displayUsuario.textContent = usuarioRed;
+      displayRol.textContent = rol;
+      userInitials.textContent = initialsFromName(fullName).toUpperCase();
+
+      sidebarUserName.textContent = fullName;
+      sidebarUserRole.textContent = usuarioRed;
+      sidebarInitialsDisplay.textContent = initialsFromName(fullName).toUpperCase();
+
+      document.getElementById('vehiculosCount').textContent = registrosCount;
+      document.getElementById('auditoriasCount').textContent = auditoriasCount;
+      document.getElementById('inicioTurno').textContent = formatTime(loginTime);
+
+      // Editar perfil toggle
+      let editing = false;
+      editProfileBtn.addEventListener('click', () => {
+        editing = !editing;
+        if (editing) {
+          profileEditForm.classList.remove('hidden');
+          inputFullName.value = fullName;
+          inputUsuario.value = usuarioRed;
+          inputRol.value = rol;
+          editProfileBtnText.textContent = 'Guardar';
+        } else {
+          // Guardar
+          const newName = inputFullName.value.trim() || fullName;
+          const newUsuario = inputUsuario.value.trim() || usuarioRed;
+          const newRol = inputRol.value.trim() || rol;
+
+          const names = newName.split(/\s+/);
+          const nombre = names.shift() || '';
+          const apellido = names.join(' ') || '';
+          const saved = {
+            ...sessionData,
+            nombre,
+            apellido,
+            usuarioRed: newUsuario,
+            rol: newRol,
+          };
+          localStorage.setItem('JaguarSession', JSON.stringify(saved));
+
+          fullName = newName;
+          usuarioRed = newUsuario;
+          rol = newRol;
+          sessionData.nombre = nombre;
+          sessionData.apellido = apellido;
+          sessionData.usuarioRed = newUsuario;
+          sessionData.rol = newRol;
+
+          displayFullName.textContent = newName;
+          displayUsuario.textContent = newUsuario;
+          displayRol.textContent = newRol;
+          userInitials.textContent = initialsFromName(newName).toUpperCase();
+
+          sidebarUserName.textContent = newName;
+          sidebarUserRole.textContent = newUsuario;
+          sidebarInitialsDisplay.textContent = initialsFromName(newName).toUpperCase();
+
+          profileEditForm.classList.add('hidden');
+          editProfileBtnText.textContent = 'Editar';
+
+          toast.textContent = 'Perfil guardado';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1800);
+        }
+      });
+
+      // Toggle de visibilidad de password
+      document.querySelectorAll('.password-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-toggle');
+          const input = document.getElementById(id);
+          if (!input) return;
+          input.type = input.type === 'password' ? 'text' : 'password';
+        });
+      });
+
+      // Simular actualización de credenciales
+      document.getElementById('updateCredentialsBtn').addEventListener('click', () => {
+        const cur = document.getElementById('currentPassword').value;
+        const nw = document.getElementById('newPassword').value;
+        const conf = document.getElementById('confirmPassword').value;
+        if (!cur || !nw || !conf) {
+          toast.textContent = 'Llena los 3 campos';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1500);
+          return;
+        }
+        if (nw !== conf) {
+          toast.textContent = 'La nueva contraseña no coincide';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1500);
+          return;
+        }
+
+        toast.textContent = 'Credenciales actualizadas';
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 1800);
+
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      });
+    </script>
+  </body>
+</html>
