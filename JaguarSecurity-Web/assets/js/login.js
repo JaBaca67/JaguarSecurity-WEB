@@ -79,7 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
             nombre,
             apellido,
             usuarioRed: usuario,
-            horaInicio: new Date().toISOString()
+            rol: 'Operador',
+            horaInicio: new Date().toISOString(),
+            loginTime: new Date().toISOString()
         };
 
         localStorage.setItem("JaguarSession", JSON.stringify(guardiaData));

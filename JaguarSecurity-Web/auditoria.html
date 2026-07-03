@@ -68,7 +68,7 @@
         </a>
 
         <a
-          href="#"
+          href="informacion.html"
           class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-400 rounded-xl hover:bg-gray-800 hover:text-white transition group"
         >
           <i class="ph ph-users text-xl group-hover:text-cyan-400 transition shrink-0"></i>
@@ -626,6 +626,9 @@
           });
 
           renderAuditoria();
+
+          const currentAudCount = parseInt(localStorage.getItem('JaguarAuditoriasCount') || '0', 10) || 0;
+          localStorage.setItem('JaguarAuditoriasCount', String(currentAudCount + 1));
         } catch (error) {
           console.error('Error cargando CSV:', error);
         }
