@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JaguarSecurity | Información del Operador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+      #bgVideo {
+        transition: opacity 0.45s ease-in-out;
+      }
+
+      .glass-panel {
+        background: linear-gradient(180deg, rgba(3, 7, 18, 0.88), rgba(3, 7, 18, 0.72));
+        backdrop-filter: blur(18px);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 h-[100dvh] flex overflow-hidden">
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <video id="bgVideo" autoplay loop muted playsinline class="h-full w-full object-cover opacity-30">
+        <source src="assets/video/background_security.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gray-950/75 backdrop-blur-[3px]"></div>
+    </div>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative z-10 p-6">
+      <div class="mx-auto w-full max-w-6xl">
+        <h1 class="text-3xl font-bold text-white mb-6">Panel de Información del Operador</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Columna Izquierda -->
+          <div class="space-y-6">
+            <!-- Tarjeta de Identidad -->
+            <section id="profileCard" class="glass-panel rounded-[1.25rem] border border-gray-800 p-6 relative">
+              <button id="editProfileBtn" class="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-gray-900/60 px-3 py-2 text-sm text-cyan-200 hover:bg-cyan-500/10">
+                <i class="ph ph-pencil"></i>
+                <span id="editProfileBtnText">Editar</span>
+              </button>
+
+              <div class="flex items-center gap-4">
+                <div class="h-24 w-24 flex items-center justify-center rounded-full bg-cyan-900/30 border border-cyan-500/20 text-cyan-200 text-3xl font-bold shadow-[0_10px_30px_rgba(34,211,238,0.08)]" id="userInitials">--</div>
+                <div>
+                  <p class="text-sm text-gray-400">Nombre Completo</p>
+                  <p id="displayFullName" class="mt-1 text-xl font-semibold text-white">Operador --</p>
+
+                  <p class="text-sm text-gray-400 mt-3">Usuario de Red</p>
+                  <p id="displayUsuario" class="mt-1 text-sm font-medium text-white">usuario.red</p>
+
+                  <p class="text-sm text-gray-400 mt-3">Rol</p>
+                  <p id="displayRol" class="mt-1 text-sm font-medium text-white">Operador</p>
+                </div>
+              </div>
+
+              <form id="profileEditForm" class="mt-6 hidden space-y-3">
+                <div>
+                  <label class="text-xs text-gray-400">Nombre Completo</label>
+                  <input id="inputFullName" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400">Usuario de Red</label>
+                  <input id="inputUsuario" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400">Rol</label>
+                  <input id="inputRol" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none" />
+                </div>
+              </form>
+            </section>
+
+            <!-- Tarjeta de Cambio de Contraseña -->
+            <section class="glass-panel rounded-[1.25rem] border border-gray-800 p-6">
+              <h3 class="text-lg font-semibold text-white">Cambio de Contraseña</h3>
+              <p class="text-sm text-gray-400">Actualiza tus credenciales de acceso</p>
+
+              <div class="mt-4 space-y-4">
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Contraseña Actual</label>
+                  <input id="currentPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="currentPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Nueva Contraseña</label>
+                  <input id="newPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="newPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="relative">
+                  <label class="text-xs text-gray-400">Confirmar Nueva</label>
+                  <input id="confirmPassword" type="password" class="mt-1 w-full rounded-xl border border-gray-700 bg-gray-900/70 px-4 py-2 text-white outline-none pr-10" />
+                  <button data-toggle="confirmPassword" class="password-toggle absolute right-2 top-9 text-gray-400 hover:text-cyan-300" type="button"><i class="ph ph-eye"></i></button>
+                </div>
+
+                <div class="pt-2">
+                  <button id="updateCredentialsBtn" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-2 font-semibold text-gray-950 hover:brightness-105">Actualizar Credenciales</button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Columna Derecha -->
+          <div class="space-y-6">
+            <section class="glass-panel rounded-[1.25rem] border border-gray-800 p-6">
+              <h3 class="text-xl font-semibold text-white">Resumen de Turno</h3>
+              <p class="text-sm text-gray-400">Estado y métricas rápidas</p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Vehículos Registrados Hoy</p>
+                  <p id="vehiculosCount" class="mt-2 text-3xl font-bold text-cyan-400">0</p>
+                </div>
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Auditorías Generadas</p>
+                  <p id="auditoriasCount" class="mt-2 text-3xl font-bold text-white">0</p>
+                </div>
+                <div class="rounded-xl border border-gray-800 bg-gray-900/60 p-4 text-center">
+                  <p class="text-xs text-gray-400">Hora de Inicio de Turno</p>
+                  <p id="inicioTurno" class="mt-2 text-3xl font-bold text-white">--:--</p>
+                </div>
+              </div>
+
+              <div class="mt-6 text-sm text-gray-400">Datos simulados para demo local.</div>
+            </section>
+
+            <section class="glass-panel rounded-[1.25rem] border border-gray-800 p-6">
+              <h4 class="text-lg font-semibold text-white">Atajos</h4>
+              <ul class="mt-3 space-y-2 text-sm text-gray-300">
+                <li>• Abrir Auditoría histórica</li>
+                <li>• Registrar Vehículo</li>
+                <li>• Revisar Bitácora</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div id="toast" class="fixed bottom-6 right-6 hidden rounded-xl bg-cyan-500/95 text-gray-900 px-4 py-2 font-semibold shadow-lg">Guardado</div>
+    </main>
+
+    <script>
+      // Inicialización con valores guardados (si existen)
+      const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null') || {};
+
+      const displayFullName = document.getElementById('displayFullName');
+      const displayUsuario = document.getElementById('displayUsuario');
+      const displayRol = document.getElementById('displayRol');
+      const userInitials = document.getElementById('userInitials');
+
+      const profileEditForm = document.getElementById('profileEditForm');
+      const inputFullName = document.getElementById('inputFullName');
+      const inputUsuario = document.getElementById('inputUsuario');
+      const inputRol = document.getElementById('inputRol');
+      const editProfileBtn = document.getElementById('editProfileBtn');
+      const editProfileBtnText = document.getElementById('editProfileBtnText');
+
+      const toast = document.getElementById('toast');
+
+      // Setear valores iniciales
+      const fullName = (sessionData.nombre && sessionData.apellido) ? `${sessionData.nombre} ${sessionData.apellido}` : (sessionData.nombre || 'Operador --');
+      const usuarioRed = sessionData.usuarioRed || 'usuario.red';
+      const rol = sessionData.rol || 'Operador';
+
+      function initialsFromName(name) {
+        if (!name) return '--';
+        const parts = name.trim().split(/\s+/);
+        return (parts[0]?.charAt(0) || '-') + (parts[1]?.charAt(0) || '-');
+      }
+
+      displayFullName.textContent = fullName;
+      displayUsuario.textContent = usuarioRed;
+      displayRol.textContent = rol;
+      userInitials.textContent = initialsFromName(fullName).toUpperCase();
+
+      // Editar perfil toggle
+      let editing = false;
+      editProfileBtn.addEventListener('click', () => {
+        editing = !editing;
+        if (editing) {
+          profileEditForm.classList.remove('hidden');
+          inputFullName.value = fullName;
+          inputUsuario.value = usuarioRed;
+          inputRol.value = rol;
+          editProfileBtnText.textContent = 'Guardar';
+        } else {
+          // Guardar
+          const newName = inputFullName.value.trim() || fullName;
+          const newUsuario = inputUsuario.value.trim() || usuarioRed;
+          const newRol = inputRol.value.trim() || rol;
+
+          // Guardar en localStorage (simulado)
+          const names = newName.split(/\s+/);
+          const nombre = names.shift() || '';
+          const apellido = names.join(' ') || '';
+          const saved = { nombre, apellido, usuarioRed: newUsuario, rol: newRol };
+          localStorage.setItem('JaguarSession', JSON.stringify(saved));
+
+          displayFullName.textContent = newName;
+          displayUsuario.textContent = newUsuario;
+          displayRol.textContent = newRol;
+          userInitials.textContent = initialsFromName(newName).toUpperCase();
+
+          profileEditForm.classList.add('hidden');
+          editProfileBtnText.textContent = 'Editar';
+
+          // Animación de guardado (toast)
+          toast.textContent = 'Perfil guardado';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1800);
+        }
+      });
+
+      // Toggle de visibilidad de password
+      document.querySelectorAll('.password-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-toggle');
+          const input = document.getElementById(id);
+          if (!input) return;
+          input.type = input.type === 'password' ? 'text' : 'password';
+        });
+      });
+
+      // Simular actualización de credenciales
+      document.getElementById('updateCredentialsBtn').addEventListener('click', () => {
+        // Validaciones mínimas
+        const cur = document.getElementById('currentPassword').value;
+        const nw = document.getElementById('newPassword').value;
+        const conf = document.getElementById('confirmPassword').value;
+        if (!cur || !nw || !conf) {
+          toast.textContent = 'Llena los 3 campos';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1500);
+          return;
+        }
+        if (nw !== conf) {
+          toast.textContent = 'La nueva contraseña no coincide';
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 1500);
+          return;
+        }
+
+        // Simular request
+        toast.textContent = 'Credenciales actualizadas';
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 1800);
+
+        // Limpiar inputs
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      });
+
+      // Rellenar estadísticas simuladas
+      document.getElementById('vehiculosCount').textContent = Math.floor(Math.random() * 40) + 1;
+      document.getElementById('auditoriasCount').textContent = Math.floor(Math.random() * 8) + 1;
+
+      // Simular hora inicio de turno
+      function randomTurnStart() {
+        const h = Math.floor(Math.random() * 24);
+        const m = [0, 0, 0, 15, 30, 45][Math.floor(Math.random() * 6)];
+        const ampm = h < 12 ? 'AM' : 'PM';
+        const hh = ((h + 11) % 12) + 1; // 12h format
+        return `${String(hh).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+      }
+      document.getElementById('inicioTurno').textContent = randomTurnStart();
+    </script>
+  </body>
+</html>

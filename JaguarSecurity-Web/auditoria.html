@@ -188,15 +188,25 @@
                 </p>
               </div>
               <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
-                <input type="file" id="csvFileInput" multiple accept=".csv" class="hidden" />
-                <button
-                  id="cargarCsvButton"
-                  type="button"
-                  class="inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-6 text-base font-semibold text-gray-950 shadow-[0_16px_35px_rgba(34,211,238,0.2)] transition hover:brightness-110"
-                >
-                  <i class="ph ph-cloud-arrow-up text-xl"></i>
-                  Cargar Archivos CSV
-                </button>
+                <input type="file" id="csvFileInput" multiple class="hidden" />
+                <div class="flex flex-wrap items-center gap-3">
+                  <button
+                    id="cargarCsvButton"
+                    type="button"
+                    class="inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-6 text-base font-semibold text-gray-950 shadow-[0_16px_35px_rgba(34,211,238,0.2)] transition hover:brightness-110"
+                  >
+                    <i class="ph ph-cloud-arrow-up text-xl"></i>
+                    Cargar Archivos CSV
+                  </button>
+                  <button
+                    id="limpiarRegistrosButton"
+                    type="button"
+                    class="inline-flex h-14 items-center justify-center gap-3 rounded-2xl border border-red-500/20 bg-gray-900/80 px-6 text-base font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-100"
+                  >
+                    <i class="ph ph-broom text-xl"></i>
+                    Limpiar Registros
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -229,6 +239,8 @@
                     <th class="px-5 py-4 text-sm font-semibold uppercase tracking-[0.24em]">Cédula</th>
                     <th class="px-5 py-4 text-sm font-semibold uppercase tracking-[0.24em]">Destino</th>
                     <th class="px-5 py-4 text-sm font-semibold uppercase tracking-[0.24em]">Detalles</th>
+                    <th class="px-5 py-4 text-sm font-semibold uppercase tracking-[0.24em]">Fecha / Hora</th>
+                    <th class="px-5 py-4 text-sm font-semibold uppercase tracking-[0.24em]">Guardia</th>
                   </tr>
                 </thead>
                 <tbody id="desktopTableBody" class="divide-y divide-gray-900/60 bg-gray-950"></tbody>
@@ -262,6 +274,7 @@
       const sessionData = JSON.parse(localStorage.getItem('JaguarSession') || 'null');
       const csvFileInput = document.getElementById('csvFileInput');
       const cargarCsvButton = document.getElementById('cargarCsvButton');
+      const limpiarRegistrosButton = document.getElementById('limpiarRegistrosButton');
       const searchInput = document.getElementById('searchInput');
       const counterLabel = document.getElementById('counterLabel');
       const filesCount = document.getElementById('filesCount');
@@ -294,13 +307,131 @@
       const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
 
       const normalizeText = (value) => String(value || '').trim();
+      const normalizeHeader = (value) => String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_');
+      const fieldAliasMap = {
+        placa: 'placa',
+        placa_vehiculo: 'placa',
+        numero_placa: 'placa',
+        placa_texto: 'placa_texto',
+        conductor: 'conductor',
+        nombre: 'nombre',
+        nombre_conductor: 'nombre',
+        nombre_operador: 'guardia',
+        operador: 'guardia',
+        operador_turno: 'guardia',
+        guardia: 'guardia',
+        guardia_turno: 'guardia',
+        cedula: 'cedula',
+        cedula_texto: 'cedula_texto',
+        cedula_conductor: 'cedula',
+        cedula_operador: 'cedula',
+        foto_cedula: 'foto_cedula',
+        identificacion: 'cedula',
+        id: 'cedula',
+        dpi: 'cedula',
+        fecha: 'fecha',
+        hora: 'hora',
+        fecha_hora: 'fecha_hora',
+        timestamp: 'fecha_hora',
+        fecha_y_hora: 'fecha_hora',
+        date_time: 'fecha_hora',
+        fecha_final: 'fecha_hora',
+        destino: 'destino',
+        destino_final: 'destino',
+        detalles: 'detalles',
+        observaciones: 'detalles',
+        descripcion: 'detalles',
+        nota: 'detalles',
+        comentarios: 'detalles'
+      };
       const safeText = (value) => (value && String(value).trim() ? String(value) : 'N/D');
+
+      const isInvalidYesNo = (value) => {
+        const normalizedValue = normalizeText(value).toLowerCase();
+        return normalizedValue === 'si' || normalizedValue === 'no';
+      };
+
+      const getRecordValue = (record, ...keys) => keys
+        .map((key) => normalizeText(record[key]))
+        .find((value) => value !== '') || '';
+
+      const getValidRecordValue = (record, ...keys) => keys
+        .map((key) => normalizeText(record[key]))
+        .find((value) => value !== '' && !isInvalidYesNo(value)) || '';
+
+      const getFechaHora = (record) => {
+        const explicit = normalizeText(record.fecha_hora) || normalizeText(record.timestamp);
+        const fecha = normalizeText(record.fecha);
+        const hora = normalizeText(record.hora);
+        if (explicit) {
+          return explicit;
+        }
+        if (fecha && hora) {
+          return `${fecha} ${hora}`;
+        }
+        return fecha || hora || '';
+      };
+
+      const normalizeHeaderKey = (value) => {
+        const normalized = normalizeHeader(value).replace(/^\ufeff/, '');
+        if (fieldAliasMap[normalized]) {
+          return fieldAliasMap[normalized];
+        }
+
+        if (normalized === 'foto_placa' || normalized === 'placa_foto') {
+          return 'foto_placa';
+        }
+        if (normalized === 'foto_cedula' || normalized === 'cedula_foto') {
+          return 'foto_cedula';
+        }
+        if (normalized.includes('placa') && !normalized.includes('foto')) {
+          return 'placa';
+        }
+        if (normalized.includes('conductor') || normalized.includes('nombre')) {
+          return 'nombre';
+        }
+        if (normalized.includes('operador') && !normalized.includes('turno')) {
+          return 'nombre';
+        }
+        if (normalized.includes('cedula') || normalized.includes('identificacion') || normalized.includes('dpi')) {
+          return 'cedula';
+        }
+        if (normalized.includes('destino')) {
+          return 'destino';
+        }
+        if (normalized.includes('detalle') || normalized.includes('observacion') || normalized.includes('descripcion') || normalized.includes('nota') || normalized.includes('comentario')) {
+          return 'detalles';
+        }
+
+        return normalized;
+      };
 
       const cargarCsvFiles = () => {
         csvFileInput.click();
       };
 
-      const parseCsvLine = (line) => {
+      const limpiarRegistros = () => {
+        registrosHistoricos = [];
+        nombresArchivos.clear();
+        csvFileInput.value = '';
+        renderAuditoria();
+      };
+
+      const detectCsvDelimiter = (line) => {
+        const commaCount = (line.match(/,/g) || []).length;
+        const semicolonCount = (line.match(/;/g) || []).length;
+        if (semicolonCount > commaCount) {
+          return ';';
+        }
+        return ',';
+      };
+
+      const parseCsvLine = (line, delimiter = ',') => {
         const values = [];
         let current = '';
         let insideQuotes = false;
@@ -318,7 +449,7 @@
             continue;
           }
 
-          if (char === ',' && !insideQuotes) {
+          if (char === delimiter && !insideQuotes) {
             values.push(current);
             current = '';
             continue;
@@ -345,13 +476,18 @@
         }
 
         return registrosHistoricos.filter((registro) => {
-          return ['placa', 'nombre', 'conductor', 'cedula', 'cedula_texto'].some((key) =>
-            normalizeText(registro[key]).toLowerCase().includes(query)
+          return Object.values(registro).some((value) =>
+            normalizeText(value).toLowerCase().includes(query)
           );
         });
       };
 
       const buildDesktopRow = (record) => {
+        const placaFinal = getValidRecordValue(record, 'placa', 'placa_texto');
+        const cedulaFinal = getValidRecordValue(record, 'cedula', 'cedula_texto');
+        const guardiaFinal = getRecordValue(record, 'guardia', 'operador_turno');
+        const fechaHoraFinal = getFechaHora(record);
+
         return `
           <tr class="align-top hover:bg-gray-900/60 transition">
             <td class="px-5 py-4">
@@ -361,19 +497,25 @@
               </span>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.placa || record.placa_texto)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(placaFinal)}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.conductor || record.nombre)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(getRecordValue(record, 'conductor', 'nombre'))}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.cedula || record.cedula_texto)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(cedulaFinal)}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm font-semibold text-white">${safeText(record.destino)}</div>
+              <div class="text-sm font-semibold text-white">${safeText(getRecordValue(record, 'destino'))}</div>
             </td>
             <td class="px-5 py-4">
-              <div class="text-sm leading-6 text-gray-400 break-words">${safeText(record.detalles)}</div>
+              <div class="text-sm leading-6 text-gray-400 break-words">${safeText(getRecordValue(record, 'detalles', 'observaciones', 'descripcion'))}</div>
+            </td>
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${safeText(fechaHoraFinal)}</div>
+            </td>
+            <td class="px-5 py-4">
+              <div class="text-sm font-semibold text-white">${safeText(guardiaFinal)}</div>
             </td>
           </tr>
         `;
@@ -395,17 +537,25 @@
             <div class="mt-4 grid gap-3">
               <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
                 <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">Placa</p>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.placa || record.placa_texto)}</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(getValidRecordValue(record, 'placa', 'placa_texto'))}</p>
               </div>
               <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
                 <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">Conductor</p>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.conductor || record.nombre)}</p>
-                <p class="mt-1 text-xs text-gray-400">Cédula: ${safeText(record.cedula || record.cedula_texto)}</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(getRecordValue(record, 'conductor', 'nombre'))}</p>
+                <p class="mt-1 text-xs text-gray-400">Cédula: ${safeText(getValidRecordValue(record, 'cedula', 'cedula_texto'))}</p>
               </div>
               <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
                 <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">Destino</p>
-                <p class="mt-2 text-sm font-semibold text-white">${safeText(record.destino)}</p>
-                <p class="mt-2 text-xs leading-5 text-gray-400">${safeText(record.detalles)}</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(getRecordValue(record, 'destino'))}</p>
+                <p class="mt-2 text-xs leading-5 text-gray-400">${safeText(getRecordValue(record, 'detalles', 'observaciones', 'descripcion'))}</p>
+              </div>
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">Fecha / Hora</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(getFechaHora(record))}</p>
+              </div>
+              <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
+                <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">Guardia</p>
+                <p class="mt-2 text-sm font-semibold text-white">${safeText(getRecordValue(record, 'guardia', 'operador_turno'))}</p>
               </div>
             </div>
           </article>
@@ -425,12 +575,20 @@
       };
 
       csvFileInput.addEventListener('change', async (event) => {
-        const files = Array.from(event.target.files || []);
-        if (files.length === 0) {
+        const allFiles = Array.from(event.target.files || []);
+        const csvFiles = allFiles.filter((file) => file.name.toLowerCase().endsWith('.csv'));
+
+        if (csvFiles.length === 0 && allFiles.length > 0) {
+          alert('Por favor, selecciona únicamente archivos con extensión .csv');
+          csvFileInput.value = '';
           return;
         }
 
-        const promises = files.map(parseCsvFile);
+        if (csvFiles.length === 0) {
+          return;
+        }
+
+        const promises = csvFiles.map(parseCsvFile);
 
         try {
           const results = await Promise.all(promises);
@@ -442,13 +600,22 @@
               return;
             }
 
-            const header = parseCsvLine(lines[0]).map((value) => normalizeText(value).toLowerCase());
+            if (lines[0].trim().toLowerCase().startsWith('sep=')) {
+              lines.shift();
+            }
+
+            if (lines.length <= 1) {
+              return;
+            }
+
+            const delimiter = detectCsvDelimiter(lines[0]);
+            const header = parseCsvLine(lines[0], delimiter).map(normalizeHeaderKey);
             lines.slice(1).forEach((line) => {
               if (!line.trim()) {
                 return;
               }
 
-              const values = parseCsvLine(line);
+              const values = parseCsvLine(line, delimiter);
               const registro = { archivo_origen: name };
               header.forEach((key, index) => {
                 registro[key] = normalizeText(values[index] || '');
@@ -466,6 +633,7 @@
 
       searchInput.addEventListener('input', renderAuditoria);
       cargarCsvButton.addEventListener('click', cargarCsvFiles);
+      limpiarRegistrosButton?.addEventListener('click', limpiarRegistros);
 
       const nombreCompleto = sessionData?.nombre && sessionData?.apellido
         ? `${sessionData.nombre} ${sessionData.apellido}`.trim()
